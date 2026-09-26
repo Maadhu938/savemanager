@@ -209,6 +209,7 @@ async function handleDownloadSubmit(e) {
   DOM.submitBtn.classList.add('is-loading');
   DOM.loadingCard.style.display = 'block';
   DOM.resultSection.style.display = 'none';
+  DOM.loadingCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
   runTerminalTicker();
 

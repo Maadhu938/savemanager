@@ -4,7 +4,8 @@
   "description": "SaveManager - Multi-Platform Video Downloader for Instagram Reels, Facebook Videos, Pinterest Videos, and YouTube Videos.",
   "type": "module",
   "scripts": {
-    "dev": "node local-dev.js"
+    "dev": "node server.js",
+    "start": "node server.js"
   },
   "keywords": [
     "savemanager",

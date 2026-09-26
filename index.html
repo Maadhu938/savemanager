@@ -52,8 +52,8 @@
       </nav>
 
       <div class="action-cluster">
-        <button type="button" class="tactile-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
-          <svg class="theme-icon sun-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button type="button" class="tactile-btn header-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
+          <svg class="theme-icon sun-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="5"></circle>
             <line x1="12" y1="1" x2="12" y2="3"></line>
             <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -64,15 +64,15 @@
             <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
             <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
           </svg>
-          <span id="themeToggleText">Light</span>
+          <span id="themeToggleText" class="btn-label-text">Light</span>
         </button>
 
-        <button type="button" class="tactile-btn" id="historyToggleBtn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button type="button" class="tactile-btn header-btn" id="historyToggleBtn" title="Open Media Vault" aria-label="Media Vault">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
             <polyline points="12 6 12 12 16 14"></polyline>
           </svg>
-          <span>Vault</span>
+          <span class="btn-label-text">Vault</span>
           <span class="history-pill" id="historyCount">0</span>
         </button>
       </div>
@@ -97,18 +97,22 @@
     <div class="segmented-control" role="tablist" aria-label="Platform Engine">
       <button type="button" class="segment-item is-active" data-platform="auto" id="tab-auto">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-        <span>Auto Resolve</span>
+        <span>Auto</span>
       </button>
       <button type="button" class="segment-item" data-platform="instagram" id="tab-instagram">
-        <span>Instagram Reels</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+        <span>Instagram</span>
       </button>
       <button type="button" class="segment-item" data-platform="facebook" id="tab-facebook">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
         <span>Facebook</span>
       </button>
       <button type="button" class="segment-item" data-platform="pinterest" id="tab-pinterest">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345-.09.375-.291 1.199-.332 1.365-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
         <span>Pinterest</span>
       </button>
       <button type="button" class="segment-item" data-platform="youtube" id="tab-youtube">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
         <span>YouTube</span>
       </button>
     </div>
@@ -164,11 +168,19 @@
 
       <!-- Clean Sample Tokens -->
       <div class="sample-bar">
-        <span class="sample-label">Test link:</span>
-        <button type="button" class="sample-token" data-sample="https://www.instagram.com/reel/C8xyz123/">Instagram Reel</button>
-        <button type="button" class="sample-token" data-sample="https://www.facebook.com/reel/1029384756/">Facebook Reel</button>
-        <button type="button" class="sample-token" data-sample="https://pin.it/7w4eR8b">Pinterest Video</button>
-        <button type="button" class="sample-token" data-sample="https://www.youtube.com/shorts/dQw4w9WgXcQ">YouTube Shorts</button>
+        <span class="sample-label">Try sample:</span>
+        <button type="button" class="sample-token" data-sample="https://www.instagram.com/reel/C8xyz123/">
+          <span class="sample-dot dot-ig"></span> Instagram
+        </button>
+        <button type="button" class="sample-token" data-sample="https://www.facebook.com/reel/1029384756/">
+          <span class="sample-dot dot-fb"></span> Facebook
+        </button>
+        <button type="button" class="sample-token" data-sample="https://pin.it/7w4eR8b">
+          <span class="sample-dot dot-pin"></span> Pinterest
+        </button>
+        <button type="button" class="sample-token" data-sample="https://www.youtube.com/shorts/dQw4w9WgXcQ">
+          <span class="sample-dot dot-yt"></span> YouTube
+        </button>
       </div>
     </div>
 
@@ -411,7 +423,7 @@
       <details class="faq-item">
         <summary class="faq-question">
           <span>How do I download an Instagram Reel or video on iPhone or Android?</span>
-          <span>+</span>
+          <span class="faq-toggle-icon">+</span>
         </summary>
         <div class="faq-answer">
           <p>Open the Instagram or Facebook app, find the Reel or video you want, tap the <strong>Share</strong> button, and select <strong>Copy Link</strong>. Paste the link into the SaveManager search bar above and click <strong>Extract</strong>. Once processed, tap <strong>Save</strong>. On Android, it downloads straight to your Gallery; on iPhone, it saves to your Safari Downloads folder, where you can tap the file and select "Save Video" to add it to your Photos app.</p>
@@ -421,7 +433,7 @@
       <details class="faq-item">
         <summary class="faq-question">
           <span>Does SaveManager add any watermark to the downloaded videos?</span>
-          <span>+</span>
+          <span class="faq-toggle-icon">+</span>
         </summary>
         <div class="faq-answer">
           <p>No. SaveManager does not add any watermark, logo, or stamp to your downloads. You receive the clean, original video as published by the creator.</p>
@@ -431,7 +443,7 @@
       <details class="faq-item">
         <summary class="faq-question">
           <span>Can I extract and download audio (MP3) from videos?</span>
-          <span>+</span>
+          <span class="faq-toggle-icon">+</span>
         </summary>
         <div class="faq-answer">
           <p>Yes. Whenever you process a video from Instagram, Facebook, or YouTube, SaveManager provides discrete format options including <strong>Audio Only (320kbps MP3 / AAC)</strong> so you can save sound tracks, podcasts, speeches, or background music.</p>
@@ -441,7 +453,7 @@
       <details class="faq-item">
         <summary class="faq-question">
           <span>Where are the downloaded files saved on my device?</span>
-          <span>+</span>
+          <span class="faq-toggle-icon">+</span>
         </summary>
         <div class="faq-answer">
           <p>On Windows and Mac, files are placed in your default <strong>Downloads</strong> directory. On Android, videos appear in your Downloads manager and Gallery. On iPhone and iPad, downloads are saved to the <strong>Files</strong> app under the "Downloads" folder.</p>
@@ -451,7 +463,7 @@
       <details class="faq-item">
         <summary class="faq-question">
           <span>Is SaveManager completely free with no download limits?</span>
-          <span>+</span>
+          <span class="faq-toggle-icon">+</span>
         </summary>
         <div class="faq-answer">
           <p>Yes, SaveManager is 100% free with unlimited downloads. There are no hourly caps, daily quotas, subscriptions, or paywalls.</p>
@@ -461,7 +473,7 @@
       <details class="faq-item">
         <summary class="faq-question">
           <span>Can I download private Instagram or Facebook reels?</span>
-          <span>+</span>
+          <span class="faq-toggle-icon">+</span>
         </summary>
         <div class="faq-answer">
           <p>To adhere to user privacy and platform security guidelines, SaveManager only processes publicly accessible media. Posts, reels, and stories from private accounts cannot be extracted without personal account credentials.</p>
@@ -471,7 +483,7 @@
       <details class="faq-item">
         <summary class="faq-question">
           <span>Do I need to install any app or browser extension?</span>
-          <span>+</span>
+          <span class="faq-toggle-icon">+</span>
         </summary>
         <div class="faq-answer">
           <p>No software or extension installation is needed. SaveManager is a web utility that works directly inside any web browser on your phone, tablet, or desktop computer (Safari, Chrome, Edge, Firefox, Brave).</p>
@@ -481,7 +493,7 @@
       <details class="faq-item">
         <summary class="faq-question">
           <span>What video quality and resolutions are supported?</span>
-          <span>+</span>
+          <span class="faq-toggle-icon">+</span>
         </summary>
         <div class="faq-answer">
           <p>SaveManager extracts the highest available master resolution uploaded by the creator, including 1080p Full HD, 720p HD, and original resolution 4K images for Pinterest pins.</p>

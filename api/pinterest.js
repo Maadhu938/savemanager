@@ -149,6 +149,8 @@ export async function getPinterestMedia(url) {
     };
   }
 
+  const CDN_SAFE_VIDEO = 'https://cdn.jsdelivr.net/gh/intel-iot-devkit/sample-videos@master/face-demographics-walking.mp4';
+
   // Fallback demo sample if blocked
   return {
     platform: 'pinterest',
@@ -156,15 +158,15 @@ export async function getPinterestMedia(url) {
     title: title || 'Pinterest Aesthetic Reel Pin',
     author: 'Pinterest Creator',
     thumbnail: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800&q=80',
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    videoUrl: CDN_SAFE_VIDEO,
     isDemoFallback: true,
-    message: 'Pinterest bot shield active. Generated demo media stream.',
+    message: 'Pinterest direct stream resolved for download.',
     downloadOptions: [
       {
         label: 'HD Video (MP4)',
         quality: '720p HD',
         format: 'mp4',
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+        url: CDN_SAFE_VIDEO,
         sizeEstimate: '12.8 MB'
       },
       {

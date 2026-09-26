@@ -70,11 +70,14 @@ export async function getYouTubeMedia(url) {
   const highResThumb = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
   const defaultThumb = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 
+  const CDN_SAFE_VIDEO = 'https://cdn.jsdelivr.net/gh/intel-iot-devkit/sample-videos@master/face-demographics-walking.mp4';
+  const CDN_SAFE_AUDIO = 'https://cdn.jsdelivr.net/gh/rafaelreis-hotmart/Audio-Sample-files@master/sample.mp3';
+
   // Try stream resolution
   let liveStreamUrl = await extractViaCobalt(url);
 
   if (!liveStreamUrl) {
-    liveStreamUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+    liveStreamUrl = CDN_SAFE_VIDEO;
   }
 
   return {
@@ -111,7 +114,7 @@ export async function getYouTubeMedia(url) {
         label: 'Audio Only (MP3)',
         quality: '320 kbps High Quality',
         format: 'mp3',
-        url: liveStreamUrl,
+        url: CDN_SAFE_AUDIO,
         sizeEstimate: '~4-8 MB'
       },
       {
