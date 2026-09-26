@@ -1,12 +1,10 @@
 {
   "name": "savemanager",
   "version": "1.0.0",
-  "description": "SaveManager - Premium All-in-One Downloader for Instagram Reels, Facebook Videos, Pinterest Videos, and YouTube Videos.",
+  "description": "SaveManager - Multi-Platform Video Downloader for Instagram Reels, Facebook Videos, Pinterest Videos, and YouTube Videos.",
   "type": "module",
   "scripts": {
-    "dev": "node local-dev.js",
-    "start": "node local-dev.js",
-    "build": "echo 'Static assets ready'"
+    "dev": "node local-dev.js"
   },
   "keywords": [
     "savemanager",
