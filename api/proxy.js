@@ -32,20 +32,12 @@ export default async function handler(req, res) {
     return res.end(JSON.stringify({ error: 'Missing media URL parameter' }));
   }
 
-  const FALLBACK_VIDEO = 'https://cdn.jsdelivr.net/gh/intel-iot-devkit/sample-videos@master/face-demographics-walking.mp4';
-  const FALLBACK_AUDIO = 'https://cdn.jsdelivr.net/gh/rafaelreis-hotmart/Audio-Sample-files@master/sample.mp3';
-
   try {
-    let targetUrl = decodeURIComponent(url);
-    const downloadFilename = filename ? decodeURIComponent(filename) : 'savemanager_media.mp4';
+    const targetUrl = decodeURIComponent(url);
+    const downloadFilename = filename ? decodeURIComponent(filename) : 'media.mp4';
     const isAudio = downloadFilename.endsWith('.mp3') || targetUrl.includes('.mp3');
 
-    // Automatically replace deprecated Google Storage bucket links
-    if (targetUrl.includes('gtv-videos-bucket') || targetUrl.includes('commondatastorage.googleapis.com')) {
-      targetUrl = isAudio ? FALLBACK_AUDIO : FALLBACK_VIDEO;
-    }
-
-    let mediaRes = await fetch(targetUrl, {
+    const mediaRes = await fetch(targetUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
         'Accept': '*/*',
@@ -53,11 +45,9 @@ export default async function handler(req, res) {
       }
     });
 
-    // If source returned 403/404 or failed, failover to verified global edge CDN stream
     if (!mediaRes.ok) {
-      console.warn(`Source URL returned ${mediaRes.status}. Streaming safe CDN backup.`);
-      const backupUrl = isAudio ? FALLBACK_AUDIO : FALLBACK_VIDEO;
-      mediaRes = await fetch(backupUrl);
+      // If direct proxy fetch fails (e.g. strict hotlink protection), redirect user directly to target
+      return safeRedirect(res, targetUrl);
     }
 
     const contentType = mediaRes.headers.get('content-type') || (isAudio ? 'audio/mpeg' : 'video/mp4');
@@ -79,18 +69,12 @@ export default async function handler(req, res) {
         res.end(Buffer.from(buffer));
       }
     } else {
-      const buffer = await mediaRes.arrayBuffer();
-      res.end(Buffer.from(buffer));
+      safeRedirect(res, targetUrl);
     }
   } catch (err) {
     console.error('Proxy download error:', err);
     try {
-      const fallbackUrl = (filename && filename.includes('.mp3')) ? FALLBACK_AUDIO : FALLBACK_VIDEO;
-      const fallbackRes = await fetch(fallbackUrl);
-      const buffer = await fallbackRes.arrayBuffer();
-      res.setHeader('Content-Type', filename && filename.includes('.mp3') ? 'audio/mpeg' : 'video/mp4');
-      res.setHeader('Content-Disposition', `attachment; filename="${(filename || 'download.mp4').replace(/[^a-zA-Z0-9_.-]/g, '_')}"`);
-      res.end(Buffer.from(buffer));
+      return safeRedirect(res, decodeURIComponent(url));
     } catch (e) {
       if (typeof res.status === 'function') {
         return res.status(500).json({ error: 'Failed to stream media download' });

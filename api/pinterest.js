@@ -149,35 +149,7 @@ export async function getPinterestMedia(url) {
     };
   }
 
-  const CDN_SAFE_VIDEO = 'https://cdn.jsdelivr.net/gh/intel-iot-devkit/sample-videos@master/face-demographics-walking.mp4';
-
-  // Fallback demo sample if blocked
-  return {
-    platform: 'pinterest',
-    id: pinId,
-    title: title || 'Pinterest Aesthetic Reel Pin',
-    author: 'Pinterest Creator',
-    thumbnail: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800&q=80',
-    videoUrl: CDN_SAFE_VIDEO,
-    isDemoFallback: true,
-    message: 'Pinterest direct stream resolved for download.',
-    downloadOptions: [
-      {
-        label: 'HD Video (MP4)',
-        quality: '720p HD',
-        format: 'mp4',
-        url: CDN_SAFE_VIDEO,
-        sizeEstimate: '12.8 MB'
-      },
-      {
-        label: 'Pin Artwork (JPG)',
-        quality: '4K Ultra HD',
-        format: 'jpg',
-        url: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800&q=80',
-        sizeEstimate: '950 KB'
-      }
-    ]
-  };
+  throw new Error('Could not find a public video in this Pinterest Pin. Please ensure the pin contains a video and is publicly viewable.');
 }
 
 export default async function handler(req, res) {

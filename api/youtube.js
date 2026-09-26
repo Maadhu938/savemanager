@@ -1,6 +1,6 @@
 /**
  * YouTube Video & Shorts Extractor
- * Supports: YouTube standard videos, YouTube Shorts, youtu.be short links
+ * Extracts genuine direct streams via YouTube Innertube API and HTML player responses
  */
 
 function extractYouTubeId(url) {
@@ -30,30 +30,113 @@ async function getYouTubeMetadata(id) {
   };
 }
 
-// Extract via Cobalt API or public resolver
-async function extractViaCobalt(url) {
+// Strategy 1: YouTube Innertube API (Android & Embedded TV Clients)
+async function extractViaInnertube(videoId) {
+  const clients = [
+    {
+      clientName: 'ANDROID',
+      clientVersion: '19.09.37',
+      androidSdkVersion: 30,
+      hl: 'en',
+      gl: 'US'
+    },
+    {
+      clientName: 'TVHTML5_SIMPLY_EMBEDDED_PLAYER',
+      clientVersion: '2.0',
+      clientScreen: 'EMBED',
+      hl: 'en',
+      gl: 'US'
+    },
+    {
+      clientName: 'IOS',
+      clientVersion: '19.09.1',
+      deviceModel: 'iPhone14,3',
+      hl: 'en',
+      gl: 'US'
+    }
+  ];
+
+  for (const client of clients) {
+    try {
+      const res = await fetch('https://www.youtube.com/youtubei/v1/player', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'com.google.android.youtube/19.09.37 (Linux; U; Android 11) gzip'
+        },
+        body: JSON.stringify({
+          videoId: videoId,
+          context: {
+            client: client
+          }
+        })
+      });
+
+      if (!res.ok) continue;
+
+      const data = await res.json();
+      const streamingData = data.streamingData;
+      if (!streamingData) continue;
+
+      const formats = [
+        ...(streamingData.formats || []),
+        ...(streamingData.adaptiveFormats || [])
+      ];
+
+      // Filter formats with direct URLs
+      const directStreams = formats.filter(f => f && f.url);
+      if (directStreams.length > 0) {
+        return {
+          title: data.videoDetails?.title,
+          author: data.videoDetails?.author,
+          thumbnail: data.videoDetails?.thumbnail?.thumbnails?.slice(-1)[0]?.url,
+          streams: directStreams
+        };
+      }
+    } catch (err) {
+      // try next client
+    }
+  }
+  return null;
+}
+
+// Strategy 2: Extract from YouTube Watch Page
+async function extractViaWatchPage(videoId) {
   try {
-    const response = await fetch('https://api.cobalt.tools/api/json', {
-      method: 'POST',
+    const res = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'User-Agent': 'SaveManager/1.0'
-      },
-      body: JSON.stringify({
-        url: url,
-        vQuality: '1080'
-      })
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9'
+      }
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      if (data.url) {
-        return data.url;
+    if (!res.ok) return null;
+
+    const html = await res.text();
+    const match = html.match(/ytInitialPlayerResponse\s*=\s*({.+?});(?:\s*var\s+meta|<\/script)/s) ||
+                  html.match(/ytInitialPlayerResponse\s*=\s*({.+?});/);
+
+    if (match && match[1]) {
+      const playerResponse = JSON.parse(match[1]);
+      const streamingData = playerResponse.streamingData;
+      if (streamingData) {
+        const formats = [
+          ...(streamingData.formats || []),
+          ...(streamingData.adaptiveFormats || [])
+        ];
+        const directStreams = formats.filter(f => f && f.url);
+        if (directStreams.length > 0) {
+          return {
+            title: playerResponse.videoDetails?.title,
+            author: playerResponse.videoDetails?.author,
+            thumbnail: playerResponse.videoDetails?.thumbnail?.thumbnails?.slice(-1)[0]?.url,
+            streams: directStreams
+          };
+        }
       }
     }
   } catch (err) {
-    // continue to fallback
+    // ignore
   }
   return null;
 }
@@ -65,66 +148,90 @@ export async function getYouTubeMedia(url) {
   }
 
   const meta = await getYouTubeMetadata(videoId);
-  const title = meta.title || `YouTube Video (${videoId})`;
-  const author = meta.author_name || 'YouTube Creator';
   const highResThumb = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
-  const defaultThumb = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 
-  const CDN_SAFE_VIDEO = 'https://cdn.jsdelivr.net/gh/intel-iot-devkit/sample-videos@master/face-demographics-walking.mp4';
-  const CDN_SAFE_AUDIO = 'https://cdn.jsdelivr.net/gh/rafaelreis-hotmart/Audio-Sample-files@master/sample.mp3';
+  // 1. Try Innertube API
+  let result = await extractViaInnertube(videoId);
 
-  // Try stream resolution
-  let liveStreamUrl = await extractViaCobalt(url);
-
-  if (!liveStreamUrl) {
-    liveStreamUrl = CDN_SAFE_VIDEO;
+  // 2. Try Watch Page
+  if (!result) {
+    result = await extractViaWatchPage(videoId);
   }
+
+  if (!result || !result.streams || result.streams.length === 0) {
+    throw new Error('Could not extract direct stream for this YouTube video. YouTube may require account verification, or the video is private/age-restricted.');
+  }
+
+  const title = result.title || meta.title || `YouTube Video (${videoId})`;
+  const author = result.author || meta.author_name || 'YouTube Creator';
+  const thumb = result.thumbnail || highResThumb;
+
+  // Build clean download options from actual extracted streams
+  const downloadOptions = [];
+
+  // Group MP4 video streams
+  const mp4Streams = result.streams.filter(s => s.mimeType && s.mimeType.includes('video/mp4'));
+  const audioStreams = result.streams.filter(s => s.mimeType && s.mimeType.includes('audio/'));
+
+  if (mp4Streams.length > 0) {
+    // Sort highest resolution first
+    mp4Streams.sort((a, b) => (b.height || 0) - (a.height || 0));
+
+    const bestVideo = mp4Streams[0];
+    const sizeMb = bestVideo.contentLength ? `~${Math.round(bestVideo.contentLength / (1024 * 1024))} MB` : 'HD Stream';
+    downloadOptions.push({
+      label: `${bestVideo.qualityLabel || '1080p HD'} Video (MP4)`,
+      quality: bestVideo.qualityLabel || '1080p',
+      format: 'mp4',
+      url: bestVideo.url,
+      sizeEstimate: sizeMb
+    });
+
+    if (mp4Streams.length > 1) {
+      const standardVideo = mp4Streams[Math.floor(mp4Streams.length / 2)];
+      const standardSize = standardVideo.contentLength ? `~${Math.round(standardVideo.contentLength / (1024 * 1024))} MB` : 'SD Stream';
+      downloadOptions.push({
+        label: `${standardVideo.qualityLabel || '720p/480p'} Video (MP4)`,
+        quality: standardVideo.qualityLabel || 'Standard',
+        format: 'mp4',
+        url: standardVideo.url,
+        sizeEstimate: standardSize
+      });
+    }
+  }
+
+  // Audio streams
+  if (audioStreams.length > 0) {
+    const bestAudio = audioStreams[0];
+    const audioSize = bestAudio.contentLength ? `~${Math.round(bestAudio.contentLength / (1024 * 1024))} MB` : 'Audio Track';
+    downloadOptions.push({
+      label: 'Audio Only (MP3/AAC)',
+      quality: 'High Bitrate Audio',
+      format: 'mp3',
+      url: bestAudio.url,
+      sizeEstimate: audioSize
+    });
+  }
+
+  // Thumbnail
+  downloadOptions.push({
+    label: 'MaxRes Thumbnail (JPG)',
+    quality: '1920x1080 Ultra HD',
+    format: 'jpg',
+    url: thumb,
+    sizeEstimate: '~400 KB'
+  });
+
+  const primaryVideoUrl = downloadOptions[0]?.url;
 
   return {
     platform: 'youtube',
     id: videoId,
     title: title,
     author: author,
-    thumbnail: highResThumb,
-    thumbnailFallback: defaultThumb,
-    videoUrl: liveStreamUrl,
-    downloadOptions: [
-      {
-        label: '1080p Full HD (MP4)',
-        quality: '1080p HD',
-        format: 'mp4',
-        url: liveStreamUrl,
-        sizeEstimate: '~35-70 MB'
-      },
-      {
-        label: '720p HD (MP4)',
-        quality: '720p HD',
-        format: 'mp4',
-        url: liveStreamUrl,
-        sizeEstimate: '~18-35 MB'
-      },
-      {
-        label: '480p Standard (MP4)',
-        quality: '480p SD',
-        format: 'mp4',
-        url: liveStreamUrl,
-        sizeEstimate: '~10-18 MB'
-      },
-      {
-        label: 'Audio Only (MP3)',
-        quality: '320 kbps High Quality',
-        format: 'mp3',
-        url: CDN_SAFE_AUDIO,
-        sizeEstimate: '~4-8 MB'
-      },
-      {
-        label: 'MaxRes Thumbnail (JPG)',
-        quality: '1920x1080 Ultra HD',
-        format: 'jpg',
-        url: highResThumb,
-        sizeEstimate: '~400 KB'
-      }
-    ]
+    thumbnail: thumb,
+    videoUrl: primaryVideoUrl,
+    downloadOptions: downloadOptions
   };
 }
 

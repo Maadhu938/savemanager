@@ -141,43 +141,7 @@ export async function getFacebookMedia(url) {
     };
   }
 
-  const CDN_SAFE_VIDEO = 'https://cdn.jsdelivr.net/gh/intel-iot-devkit/sample-videos@master/face-demographics-walking.mp4';
-  const CDN_SAFE_AUDIO = 'https://cdn.jsdelivr.net/gh/rafaelreis-hotmart/Audio-Sample-files@master/sample.mp3';
-
-  // Fallback demo sample if Facebook blocks serverless IP
-  return {
-    platform: 'facebook',
-    id: 'fb_sample',
-    title: title || 'Facebook Reel / Public Video',
-    author: 'Facebook Creator',
-    thumbnail: 'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=800&q=80',
-    videoUrl: CDN_SAFE_VIDEO,
-    isDemoFallback: true,
-    message: 'Facebook direct stream resolved for download.',
-    downloadOptions: [
-      {
-        label: 'HD Video (MP4)',
-        quality: '720p HD',
-        format: 'mp4',
-        url: CDN_SAFE_VIDEO,
-        sizeEstimate: '18.2 MB'
-      },
-      {
-        label: 'Audio Only (MP3)',
-        quality: 'High Quality Audio',
-        format: 'mp3',
-        url: CDN_SAFE_AUDIO,
-        sizeEstimate: '3.1 MB'
-      },
-      {
-        label: 'Cover Thumbnail',
-        quality: 'High Definition',
-        format: 'jpg',
-        url: 'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=800&q=80',
-        sizeEstimate: '512 KB'
-      }
-    ]
-  };
+  throw new Error('Could not extract Facebook video. Please ensure the video is public (not restricted to friends or private groups).');
 }
 
 export default async function handler(req, res) {
