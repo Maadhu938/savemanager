@@ -8,6 +8,7 @@ import { getInstagramMedia } from './instagram.js';
 import { getFacebookMedia } from './facebook.js';
 import { getPinterestMedia } from './pinterest.js';
 import { getYouTubeMedia } from './youtube.js';
+import { fetchFromRapidApi } from './rapidapi.js';
 
 // Auto-detect platform from URL string
 export function detectPlatform(url) {
@@ -100,26 +101,40 @@ export default async function handler(req, res) {
 
   try {
     let mediaData = null;
+    let nativeError = null;
 
-    switch (platform) {
-      case 'instagram':
-        mediaData = await getInstagramMedia(url);
-        break;
-      case 'facebook':
-        mediaData = await getFacebookMedia(url);
-        break;
-      case 'pinterest':
-        mediaData = await getPinterestMedia(url);
-        break;
-      case 'youtube':
-        mediaData = await getYouTubeMedia(url);
-        break;
-      default:
-        throw new Error(`Platform '${platform}' is not supported.`);
+    try {
+      switch (platform) {
+        case 'instagram':
+          mediaData = await getInstagramMedia(url);
+          break;
+        case 'facebook':
+          mediaData = await getFacebookMedia(url);
+          break;
+        case 'pinterest':
+          mediaData = await getPinterestMedia(url);
+          break;
+        case 'youtube':
+          mediaData = await getYouTubeMedia(url);
+          break;
+        default:
+          throw new Error(`Platform '${platform}' is not supported.`);
+      }
+    } catch (err) {
+      nativeError = err;
+      console.warn(`Native extraction failed for ${platform}, attempting RapidAPI fallback:`, err.message);
+    }
+
+    // If native failed or returned no streams, attempt RapidAPI fallback
+    if (!mediaData || !mediaData.downloadOptions || mediaData.downloadOptions.length === 0) {
+      const fallbackData = await fetchFromRapidApi(url, platform);
+      if (fallbackData && fallbackData.downloadOptions && fallbackData.downloadOptions.length > 0) {
+        mediaData = fallbackData;
+      }
     }
 
     if (!mediaData) {
-      throw new Error('Unable to extract media from this URL. Please verify the link is public.');
+      throw nativeError || new Error('Unable to extract media from this URL. Please verify the link is public.');
     }
 
     // Attach proxy download URLs to download options
