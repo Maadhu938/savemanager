@@ -30,6 +30,25 @@ export function detectPlatform(url) {
   return null;
 }
 
+async function fetchFromYtDlpBackend(url) {
+  const backendUrl = process.env.YTDLP_BACKEND_URL;
+  if (!backendUrl) return null;
+  try {
+    const cleanBase = backendUrl.replace(/\/+$/, '');
+    const res = await fetch(`${cleanBase}/extract?url=${encodeURIComponent(url)}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    if (json && json.success && json.data) {
+      return json.data;
+    }
+  } catch (err) {
+    console.warn('yt-dlp micro-backend query error:', err.message);
+  }
+  return null;
+}
+
 export default async function handler(req, res) {
   // CORS setup
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -103,29 +122,37 @@ export default async function handler(req, res) {
     let mediaData = null;
     let nativeError = null;
 
-    try {
-      switch (platform) {
-        case 'instagram':
-          mediaData = await getInstagramMedia(url);
-          break;
-        case 'facebook':
-          mediaData = await getFacebookMedia(url);
-          break;
-        case 'pinterest':
-          mediaData = await getPinterestMedia(url);
-          break;
-        case 'youtube':
-          mediaData = await getYouTubeMedia(url);
-          break;
-        default:
-          throw new Error(`Platform '${platform}' is not supported.`);
-      }
-    } catch (err) {
-      nativeError = err;
-      console.warn(`Native extraction failed for ${platform}, attempting RapidAPI fallback:`, err.message);
+    // 1. Check yt-dlp micro-backend first (if configured in environment)
+    if (process.env.YTDLP_BACKEND_URL) {
+      mediaData = await fetchFromYtDlpBackend(url);
     }
 
-    // If native failed or returned no streams, attempt RapidAPI fallback
+    // 2. Try native platform extractor
+    if (!mediaData) {
+      try {
+        switch (platform) {
+          case 'instagram':
+            mediaData = await getInstagramMedia(url);
+            break;
+          case 'facebook':
+            mediaData = await getFacebookMedia(url);
+            break;
+          case 'pinterest':
+            mediaData = await getPinterestMedia(url);
+            break;
+          case 'youtube':
+            mediaData = await getYouTubeMedia(url);
+            break;
+          default:
+            throw new Error(`Platform '${platform}' is not supported.`);
+        }
+      } catch (err) {
+        nativeError = err;
+        console.warn(`Native extraction failed for ${platform}, attempting RapidAPI fallback:`, err.message);
+      }
+    }
+
+    // 3. If native failed or returned no streams, attempt RapidAPI fallback
     if (!mediaData || !mediaData.downloadOptions || mediaData.downloadOptions.length === 0) {
       const fallbackData = await fetchFromRapidApi(url, platform);
       if (fallbackData && fallbackData.downloadOptions && fallbackData.downloadOptions.length > 0) {

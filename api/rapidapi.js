@@ -29,7 +29,10 @@ export async function fetchFromRapidApi(url, platform = 'video') {
     // ----------------------------------------------------
     if (platform === 'instagram' || url.includes('instagram.com')) {
       const igHost = 'instagram-reels-downloader-api.p.rapidapi.com';
-      const igEndpoint = `https://${igHost}/download?url=${encodeURIComponent(url)}`;
+      // Clean Instagram URL to remove tracking parameters (?igsh=..., /share/reel/...)
+      const scMatch = url.match(/(?:reel|reels|p|share\/reel)\/([A-Za-z0-9_-]+)/i);
+      const cleanUrl = scMatch ? `https://www.instagram.com/reel/${scMatch[1]}/` : url;
+      const igEndpoint = `https://${igHost}/download?url=${encodeURIComponent(cleanUrl)}`;
 
       const res = await fetch(igEndpoint, {
         method: 'GET',
