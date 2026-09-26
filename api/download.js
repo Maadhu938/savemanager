@@ -32,21 +32,27 @@ export function detectPlatform(url) {
 
 async function fetchFromYtDlpBackend(url) {
   const backendUrl = process.env.YTDLP_BACKEND_URL;
-  if (!backendUrl) return null;
+  if (!backendUrl) return { data: null, error: null };
   try {
     const cleanBase = backendUrl.replace(/\/+$/, '');
     const res = await fetch(`${cleanBase}/extract?url=${encodeURIComponent(url)}`, {
       headers: { 'Accept': 'application/json' }
     });
-    if (!res.ok) return null;
-    const json = await res.json();
-    if (json && json.success && json.data) {
-      return json.data;
+    const json = await res.json().catch(() => null);
+    if (res.ok && json && json.success && json.data) {
+      return { data: json.data, error: null };
+    }
+    if (json && json.detail) {
+      let detailMsg = json.detail;
+      if (detailMsg.includes("isn't available to everyone") || detailMsg.includes("certain audiences")) {
+        detailMsg = "This Instagram Reel has audience or age restrictions set by the creator, and cannot be downloaded without logging into Instagram.";
+      }
+      return { data: null, error: detailMsg };
     }
   } catch (err) {
     console.warn('yt-dlp micro-backend query error:', err.message);
   }
-  return null;
+  return { data: null, error: null };
 }
 
 export default async function handler(req, res) {
@@ -124,7 +130,12 @@ export default async function handler(req, res) {
 
     // 1. Check yt-dlp micro-backend first (if configured in environment)
     if (process.env.YTDLP_BACKEND_URL) {
-      mediaData = await fetchFromYtDlpBackend(url);
+      const ytdlpResult = await fetchFromYtDlpBackend(url);
+      if (ytdlpResult && ytdlpResult.data) {
+        mediaData = ytdlpResult.data;
+      } else if (ytdlpResult && ytdlpResult.error) {
+        nativeError = new Error(ytdlpResult.error);
+      }
     }
 
     // 2. Try native platform extractor
