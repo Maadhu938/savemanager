@@ -1,0 +1,70 @@
+/**
+ * Download Streaming Proxy
+ * Bypasses CORS and sets Content-Disposition: attachment to force direct native browser download
+ */
+import { Readable } from 'stream';
+
+export default async function handler(req, res) {
+  // Support CORS preflight
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  const { url, filename } = req.query || {};
+
+  if (!url) {
+    return res.status(400).json({ error: 'Missing media URL parameter' });
+  }
+
+  try {
+    const targetUrl = decodeURIComponent(url);
+    const downloadFilename = filename ? decodeURIComponent(filename) : 'savemanager_media.mp4';
+
+    const mediaRes = await fetch(targetUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+        'Accept': '*/*',
+        'Referer': 'https://www.google.com/'
+      }
+    });
+
+    if (!mediaRes.ok) {
+      // If fetching fails, redirect client directly as fallback
+      return res.redirect(302, targetUrl);
+    }
+
+    const contentType = mediaRes.headers.get('content-type') || 'application/octet-stream';
+    const contentLength = mediaRes.headers.get('content-length');
+
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Disposition', `attachment; filename="${downloadFilename.replace(/[^a-zA-Z0-9_.-]/g, '_')}"`);
+    if (contentLength) {
+      res.setHeader('Content-Length', contentLength);
+    }
+
+    // Pipe response stream to client
+    if (mediaRes.body) {
+      if (typeof Readable.fromWeb === 'function') {
+        const stream = Readable.fromWeb(mediaRes.body);
+        stream.pipe(res);
+      } else {
+        const buffer = await mediaRes.arrayBuffer();
+        res.end(Buffer.from(buffer));
+      }
+    } else {
+      res.redirect(302, targetUrl);
+    }
+  } catch (err) {
+    console.error('Proxy download error:', err);
+    // Graceful fallback: redirect to the target URL directly
+    try {
+      return res.redirect(302, decodeURIComponent(url));
+    } catch (e) {
+      return res.status(500).json({ error: 'Failed to stream media download' });
+    }
+  }
+}
