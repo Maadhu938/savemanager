@@ -135,6 +135,9 @@ export default async function handler(req, res) {
         mediaData = ytdlpResult.data;
       } else if (ytdlpResult && ytdlpResult.error) {
         nativeError = new Error(ytdlpResult.error);
+        if (ytdlpResult.error.includes('restriction') || ytdlpResult.error.includes('Private')) {
+          throw nativeError;
+        }
       }
     }
 
@@ -158,7 +161,7 @@ export default async function handler(req, res) {
             throw new Error(`Platform '${platform}' is not supported.`);
         }
       } catch (err) {
-        nativeError = err;
+        if (!nativeError) nativeError = err;
         console.warn(`Native extraction failed for ${platform}, attempting RapidAPI fallback:`, err.message);
       }
     }
