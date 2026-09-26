@@ -1,12 +1,12 @@
 {
   "name": "savemanager",
   "version": "1.0.0",
-  "description": "SaveManager - Premium All-in-One Downloader for Instagram Reels, Facebook Videos, Pinterest Videos, and YouTube Videos. AdSense Ready & Vercel Optimized.",
+  "description": "SaveManager - Premium All-in-One Downloader for Instagram Reels, Facebook Videos, Pinterest Videos, and YouTube Videos.",
   "type": "module",
-  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node local-dev.js",
+    "start": "node local-dev.js",
+    "build": "echo 'Static assets ready'"
   },
   "keywords": [
     "savemanager",
@@ -15,8 +15,7 @@
     "pinterest-video-downloader",
     "youtube-downloader",
     "vercel",
-    "video-downloader",
-    "adsense"
+    "video-downloader"
   ],
   "author": "SaveManager Team",
   "license": "MIT",

@@ -1,6 +1,6 @@
 /**
  * SaveManager - Local Development Server
- * Emulates Vercel Serverless Functions and serves static frontend assets
+ * Emulates Vercel Serverless Functions and serves static frontend assets locally
  * Powered by Node.js native HTTP (zero dependencies needed!)
  */
 

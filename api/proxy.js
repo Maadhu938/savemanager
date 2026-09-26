@@ -4,6 +4,14 @@
  */
 import { Readable } from 'stream';
 
+function safeRedirect(res, targetUrl) {
+  if (typeof res.redirect === 'function') {
+    return res.redirect(302, targetUrl);
+  }
+  res.writeHead(302, { Location: targetUrl });
+  return res.end();
+}
+
 export default async function handler(req, res) {
   // Support CORS preflight
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -11,13 +19,17 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    return res.status ? res.status(200).end() : res.end();
   }
 
   const { url, filename } = req.query || {};
 
   if (!url) {
-    return res.status(400).json({ error: 'Missing media URL parameter' });
+    if (typeof res.status === 'function') {
+      return res.status(400).json({ error: 'Missing media URL parameter' });
+    }
+    res.statusCode = 400;
+    return res.end(JSON.stringify({ error: 'Missing media URL parameter' }));
   }
 
   try {
@@ -33,8 +45,7 @@ export default async function handler(req, res) {
     });
 
     if (!mediaRes.ok) {
-      // If fetching fails, redirect client directly as fallback
-      return res.redirect(302, targetUrl);
+      return safeRedirect(res, targetUrl);
     }
 
     const contentType = mediaRes.headers.get('content-type') || 'application/octet-stream';
@@ -56,15 +67,18 @@ export default async function handler(req, res) {
         res.end(Buffer.from(buffer));
       }
     } else {
-      res.redirect(302, targetUrl);
+      safeRedirect(res, targetUrl);
     }
   } catch (err) {
     console.error('Proxy download error:', err);
-    // Graceful fallback: redirect to the target URL directly
     try {
-      return res.redirect(302, decodeURIComponent(url));
+      return safeRedirect(res, decodeURIComponent(url));
     } catch (e) {
-      return res.status(500).json({ error: 'Failed to stream media download' });
+      if (typeof res.status === 'function') {
+        return res.status(500).json({ error: 'Failed to stream media download' });
+      }
+      res.statusCode = 500;
+      return res.end(JSON.stringify({ error: 'Failed to stream media download' }));
     }
   }
 }

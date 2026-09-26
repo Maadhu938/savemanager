@@ -35,8 +35,17 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
+  const sendJson = (status, data) => {
+    if (typeof res.status === 'function') {
+      return res.status(status).json(data);
+    }
+    res.statusCode = status;
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify(data));
+  };
+
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    return res.status ? res.status(200).end() : res.end();
   }
 
   // Parse body or query
@@ -45,7 +54,18 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     let body = req.body;
-    if (typeof body === 'string') {
+    if (!body) {
+      try {
+        const chunks = [];
+        for await (const chunk of req) {
+          chunks.push(chunk);
+        }
+        const raw = Buffer.concat(chunks).toString('utf8');
+        if (raw) body = JSON.parse(raw);
+      } catch (e) {
+        body = {};
+      }
+    } else if (typeof body === 'string') {
       try {
         body = JSON.parse(body);
       } catch (e) {
@@ -60,7 +80,7 @@ export default async function handler(req, res) {
   }
 
   if (!url) {
-    return res.status(400).json({
+    return sendJson(400, {
       success: false,
       error: 'Please enter a video URL to download'
     });
@@ -72,7 +92,7 @@ export default async function handler(req, res) {
     : detectPlatform(url);
 
   if (!platform) {
-    return res.status(400).json({
+    return sendJson(400, {
       success: false,
       error: 'Unsupported link. SaveManager currently supports Instagram, Facebook, Pinterest, and YouTube.'
     });
@@ -105,7 +125,7 @@ export default async function handler(req, res) {
     // Attach proxy download URLs to download options
     if (mediaData.downloadOptions && Array.isArray(mediaData.downloadOptions)) {
       mediaData.downloadOptions = mediaData.downloadOptions.map((opt, idx) => {
-        const safeExt = opt.format || (opt.label.includes('Audio') ? 'mp3' : opt.label.includes('Image') ? 'jpg' : 'mp4');
+        const safeExt = opt.format || (opt.label && opt.label.includes('Audio') ? 'mp3' : opt.label && opt.label.includes('Image') ? 'jpg' : 'mp4');
         const filename = `${platform}_${mediaData.id || 'media'}_${opt.quality || idx}.${safeExt}`.replace(/\s+/g, '_');
         return {
           ...opt,
@@ -114,13 +134,13 @@ export default async function handler(req, res) {
       });
     }
 
-    return res.status(200).json({
+    return sendJson(200, {
       success: true,
       data: mediaData
     });
   } catch (err) {
     console.error(`Error resolving media for ${platform}:`, err);
-    return res.status(500).json({
+    return sendJson(500, {
       success: false,
       platform: platform,
       error: err.message || 'Failed to process video link. Please make sure the video is public and try again.'
