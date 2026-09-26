@@ -43,7 +43,8 @@ def detect_platform(url: str) -> str:
         return 'tiktok'
     return 'video'
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD", "OPTIONS", "POST"])
+@app.api_route("/health", methods=["GET", "HEAD", "OPTIONS", "POST"])
 def health_check():
     return {
         "status": "online",
