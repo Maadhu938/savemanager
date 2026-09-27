@@ -197,19 +197,105 @@ async function extractViaPublicPage(shortcode) {
   return null;
 }
 
+function shortcodeToMediaId(shortcode) {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+  let id = BigInt(0);
+  for (let i = 0; i < shortcode.length; i++) {
+    const char = shortcode[i];
+    const index = alphabet.indexOf(char);
+    if (index === -1) return null;
+    id = id * BigInt(64) + BigInt(index);
+  }
+  return id.toString();
+}
+
+// Strategy 3: Instagram Mobile / Internal API
+async function extractViaMobileApi(shortcode) {
+  const mediaId = shortcodeToMediaId(shortcode);
+  if (!mediaId) return null;
+
+  const endpoints = [
+    `https://i.instagram.com/api/v1/media/${mediaId}/info/`,
+    `https://www.instagram.com/api/v1/media/${mediaId}/info/`
+  ];
+
+  const cookie = process.env.INSTAGRAM_COOKIE || '';
+
+  for (const ep of endpoints) {
+    try {
+      const headers = {
+        'User-Agent': 'Instagram 275.0.0.27.98 Android (33/13; 420dpi; 1080x2400; Google/google; Pixel 7; cheetah; cheetah; en_US; 458649479)',
+        'Accept': '*/*',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'X-IG-App-ID': '936619743392459',
+        'Referer': 'https://www.instagram.com/',
+        'Origin': 'https://www.instagram.com',
+        'Sec-Fetch-Site': 'same-site',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Dest': 'empty'
+      };
+      if (cookie) {
+        headers['Cookie'] = cookie.includes('sessionid=') ? cookie : `sessionid=${cookie};`;
+      }
+
+      const res = await fetch(ep, { headers });
+      if (!res.ok) continue;
+
+      const data = await res.json();
+      const item = data?.items?.[0];
+      if (!item) continue;
+
+      const videoVersions = item.video_versions || [];
+      if (videoVersions.length === 0) continue;
+
+      const bestVideo = videoVersions[0];
+      const caption = item.caption?.text?.replace(/#\S+/g, '')?.trim()?.slice(0, 100) || 'Instagram Reel';
+      const author = item.user?.username || item.user?.full_name || 'Instagram Creator';
+      const thumbnail = item.image_versions2?.candidates?.[0]?.url || '';
+
+      const downloadOptions = videoVersions.map((vv) => ({
+        label: `${vv.height}p HD Video (Audio Included)`,
+        quality: `${vv.height}p`,
+        format: 'mp4',
+        url: cleanCdnUrl(vv.url),
+        sizeEstimate: `${vv.width}x${vv.height}`
+      }));
+
+      return {
+        platform: 'instagram',
+        id: shortcode,
+        title: caption,
+        author: author,
+        thumbnail: thumbnail,
+        videoUrl: cleanCdnUrl(bestVideo.url),
+        downloadOptions: downloadOptions
+      };
+    } catch (e) {
+      // ignore and try next strategy
+    }
+  }
+  return null;
+}
+
 export async function getInstagramMedia(url) {
   const shortcode = extractShortcode(url);
   if (!shortcode) {
     throw new Error('Invalid Instagram URL. Please provide a valid Reel or Post link (e.g., instagram.com/reel/...).');
   }
 
-  // 1. Try Embed extraction
+  // 1. Try Mobile API with session support
+  const mobileResult = await extractViaMobileApi(shortcode);
+  if (mobileResult && mobileResult.videoUrl) {
+    return mobileResult;
+  }
+
+  // 2. Try Embed extraction
   const embedResult = await extractViaEmbed(shortcode);
   if (embedResult && embedResult.videoUrl) {
     return embedResult;
   }
 
-  // 2. Try Public Page scraper
+  // 3. Try Public Page scraper
   const pageResult = await extractViaPublicPage(shortcode);
   if (pageResult && pageResult.videoUrl) {
     return pageResult;

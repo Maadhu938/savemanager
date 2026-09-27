@@ -37,11 +37,25 @@ export default async function handler(req, res) {
     const downloadFilename = filename ? decodeURIComponent(filename) : 'media.mp4';
     const isAudio = downloadFilename.endsWith('.mp3') || targetUrl.includes('.mp3');
 
+    let referer = 'https://www.instagram.com/';
+    if (targetUrl.includes('googlevideo.com') || targetUrl.includes('youtube.com')) {
+      referer = 'https://www.youtube.com/';
+    } else if (targetUrl.includes('fbcdn.net') || targetUrl.includes('facebook.com')) {
+      referer = 'https://www.facebook.com/';
+    } else if (targetUrl.includes('pinimg.com') || targetUrl.includes('pinterest.com')) {
+      referer = 'https://www.pinterest.com/';
+    }
+
     const mediaRes = await fetch(targetUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
         'Accept': '*/*',
-        'Referer': 'https://www.google.com/'
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Referer': referer,
+        'Origin': referer.replace(/\/+$/, ''),
+        'Sec-Fetch-Dest': isAudio ? 'audio' : 'video',
+        'Sec-Fetch-Mode': 'no-cors',
+        'Sec-Fetch-Site': 'cross-site'
       }
     });
 
