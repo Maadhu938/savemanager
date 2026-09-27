@@ -177,24 +177,37 @@ export async function getYouTubeMedia(url) {
     // Sort highest resolution first
     mp4Streams.sort((a, b) => (b.height || 0) - (a.height || 0));
 
+    const backendBase = (process.env.YTDLP_BACKEND_URL || 'https://savemanager-api.onrender.com').replace(/\/+$/, '');
+    const bestAudio = audioStreams.length > 0 ? audioStreams[0] : null;
+
     const bestVideo = mp4Streams[0];
     const sizeMb = bestVideo.contentLength ? `~${Math.round(bestVideo.contentLength / (1024 * 1024))} MB` : 'HD Stream';
+    const bestHasAudio = bestVideo.audioChannels || (bestVideo.mimeType && bestVideo.mimeType.includes('audio'));
+    const bestUrl = (!bestHasAudio && bestAudio) 
+      ? `${backendBase}/mux?video_url=${encodeURIComponent(bestVideo.url)}&audio_url=${encodeURIComponent(bestAudio.url)}&filename=${encodeURIComponent(`youtube_${videoId}_${bestVideo.qualityLabel || '1080p'}.mp4`)}`
+      : bestVideo.url;
+
     downloadOptions.push({
-      label: `${bestVideo.qualityLabel || '1080p HD'} Video (MP4)`,
+      label: `${bestVideo.qualityLabel || '1080p HD'} Video (MP4 - Audio Included)`,
       quality: bestVideo.qualityLabel || '1080p',
       format: 'mp4',
-      url: bestVideo.url,
+      url: bestUrl,
       sizeEstimate: sizeMb
     });
 
     if (mp4Streams.length > 1) {
       const standardVideo = mp4Streams[Math.floor(mp4Streams.length / 2)];
       const standardSize = standardVideo.contentLength ? `~${Math.round(standardVideo.contentLength / (1024 * 1024))} MB` : 'SD Stream';
+      const stdHasAudio = standardVideo.audioChannels || (standardVideo.mimeType && standardVideo.mimeType.includes('audio'));
+      const stdUrl = (!stdHasAudio && bestAudio)
+        ? `${backendBase}/mux?video_url=${encodeURIComponent(standardVideo.url)}&audio_url=${encodeURIComponent(bestAudio.url)}&filename=${encodeURIComponent(`youtube_${videoId}_${standardVideo.qualityLabel || '720p'}.mp4`)}`
+        : standardVideo.url;
+
       downloadOptions.push({
-        label: `${standardVideo.qualityLabel || '720p/480p'} Video (MP4)`,
+        label: `${standardVideo.qualityLabel || '720p'} Video (MP4 - Audio Included)`,
         quality: standardVideo.qualityLabel || 'Standard',
         format: 'mp4',
-        url: standardVideo.url,
+        url: stdUrl,
         sizeEstimate: standardSize
       });
     }

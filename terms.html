@@ -28,7 +28,8 @@
   <header class="app-header">
     <div class="header-inner container">
       <a href="/" class="brand" id="logoLink">
-        <img src="logo.jpg" alt="SaveManager Logo" class="brand-logo-img">
+        <img src="/logo-dark.png" alt="SaveManager Logo" class="brand-logo-img logo-dark-theme">
+        <img src="/logo-light.png" alt="SaveManager Logo" class="brand-logo-img logo-light-theme">
         <div class="brand-text">
           <span>SaveManager</span>
           <span class="brand-sub">v2.4</span>
@@ -49,6 +50,16 @@
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
+        </button>
+
+        <button type="button" class="tactile-btn header-btn" id="historyToggleBtn" title="Open Media Vault"
+          aria-label="Media Vault">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span class="btn-label-text">Vault</span>
+          <span class="history-pill" id="historyCount">0</span>
         </button>
       </div>
     </div>
@@ -173,7 +184,8 @@
     <div class="footer-grid container">
       <div>
         <div class="brand" style="margin-bottom: 12px;">
-          <img src="logo.jpg" alt="SaveManager Logo" class="brand-logo-img">
+          <img src="/logo-dark.png" alt="SaveManager Logo" class="brand-logo-img logo-dark-theme">
+          <img src="/logo-light.png" alt="SaveManager Logo" class="brand-logo-img logo-light-theme">
           <span class="brand-text">SaveManager</span>
         </div>
         <p class="footer-desc">
@@ -220,7 +232,30 @@
     </div>
   </footer>
 
-  <script src="app.js"></script>
+  <!-- Recent Vault Drawer -->
+  <aside class="history-drawer" id="historyDrawer" aria-hidden="true">
+    <div class="history-drawer-header">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <h3 style="font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;">Media Vault</h3>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button type="button" class="tactile-btn" id="clearHistoryBtn"
+          style="padding: 4px 10px; font-size: 0.76rem;">Clear</button>
+        <button type="button" id="historyCloseBtn"
+          style="background: none; border: none; color: var(--text-mid); font-size: 1.4rem; cursor: pointer;">&times;</button>
+      </div>
+    </div>
+    <div class="history-list" id="historyList"></div>
+  </aside>
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="/app.js"></script>
 </body>
 
 </html>

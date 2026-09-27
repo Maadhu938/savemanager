@@ -158,9 +158,27 @@ body {
   max-width: 150px;
   object-fit: contain;
   display: block;
+  background: transparent !important;
+  border: none !important;
 }
 
-.brand:hover .brand-glyph {
+.logo-light-theme {
+  display: none !important;
+}
+
+.logo-dark-theme {
+  display: block !important;
+}
+
+[data-theme="light"] .logo-dark-theme {
+  display: none !important;
+}
+
+[data-theme="light"] .logo-light-theme {
+  display: block !important;
+}
+
+.brand:hover .brand-logo-img {
   transform: scale(1.04);
 }
 

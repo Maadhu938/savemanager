@@ -149,11 +149,19 @@ async function pasteFromClipboard() {
 }
 
 function showToast(message, type = 'info') {
+  let container = DOM.toastContainer || document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'toast-container';
+    container.id = 'toastContainer';
+    document.body.appendChild(container);
+    DOM.toastContainer = container;
+  }
   const toast = document.createElement('div');
   toast.className = 'toast';
   const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
   toast.innerHTML = `<span style="color: #818cf8; font-family: var(--font-mono); margin-right: 6px;">[${icon}]</span> <span>${message}</span>`;
-  DOM.toastContainer.appendChild(toast);
+  container.appendChild(toast);
 
   setTimeout(() => {
     toast.style.opacity = '0';
@@ -336,41 +344,51 @@ function renderMediaResult(media) {
 }
 
 // Media Play Trigger
-DOM.playOverlayBtn.addEventListener('click', () => {
-  if (DOM.previewVideo.paused) {
-    DOM.previewVideo.play();
+if (DOM.playOverlayBtn && DOM.previewVideo) {
+  DOM.playOverlayBtn.addEventListener('click', () => {
+    if (DOM.previewVideo.paused) {
+      DOM.previewVideo.play();
+      DOM.playOverlayBtn.style.display = 'none';
+    } else {
+      DOM.previewVideo.pause();
+      DOM.playOverlayBtn.style.display = 'flex';
+    }
+  });
+
+  DOM.previewVideo.addEventListener('play', () => {
     DOM.playOverlayBtn.style.display = 'none';
-  } else {
-    DOM.previewVideo.pause();
+  });
+
+  DOM.previewVideo.addEventListener('pause', () => {
     DOM.playOverlayBtn.style.display = 'flex';
-  }
-});
-
-DOM.previewVideo.addEventListener('play', () => {
-  DOM.playOverlayBtn.style.display = 'none';
-});
-
-DOM.previewVideo.addEventListener('pause', () => {
-  DOM.playOverlayBtn.style.display = 'flex';
-});
+  });
+}
 
 // Copy Direct URL
-DOM.copyShareLinkBtn.addEventListener('click', () => {
-  if (AppState.currentMedia && AppState.currentMedia.videoUrl) {
-    navigator.clipboard.writeText(AppState.currentMedia.videoUrl)
-      .then(() => showToast('Direct CDN stream URL copied', 'success'))
-      .catch(() => showToast('Could not copy link', 'error'));
-  }
-});
+if (DOM.copyShareLinkBtn) {
+  DOM.copyShareLinkBtn.addEventListener('click', () => {
+    if (AppState.currentMedia && AppState.currentMedia.videoUrl) {
+      navigator.clipboard.writeText(AppState.currentMedia.videoUrl)
+        .then(() => showToast('Direct CDN stream URL copied', 'success'))
+        .catch(() => showToast('Could not copy link', 'error'));
+    }
+  });
+}
 
 // Reset
-DOM.resetBtn.addEventListener('click', () => {
-  DOM.resultSection.style.display = 'none';
-  DOM.urlInput.value = '';
-  updateUrlDetectionUI();
-  DOM.urlInput.focus();
-  window.scrollTo({ top: DOM.downloadForm.offsetTop - 120, behavior: 'smooth' });
-});
+if (DOM.resetBtn) {
+  DOM.resetBtn.addEventListener('click', () => {
+    if (DOM.resultSection) DOM.resultSection.style.display = 'none';
+    if (DOM.urlInput) {
+      DOM.urlInput.value = '';
+      updateUrlDetectionUI();
+      DOM.urlInput.focus();
+    }
+    if (DOM.downloadForm) {
+      window.scrollTo({ top: DOM.downloadForm.offsetTop - 120, behavior: 'smooth' });
+    }
+  });
+}
 
 // History in LocalStorage
 function loadHistory() {
@@ -404,9 +422,14 @@ function saveToHistory(media) {
 }
 
 function updateHistoryUI() {
-  DOM.historyCount.textContent = AppState.history.length;
+  const historyCount = DOM.historyCount || document.getElementById('historyCount');
+  const historyList = DOM.historyList || document.getElementById('historyList');
+
+  if (historyCount) historyCount.textContent = AppState.history.length;
+  if (!historyList) return;
+
   if (AppState.history.length === 0) {
-    DOM.historyList.innerHTML = `
+    historyList.innerHTML = `
       <div style="text-align: center; padding: 40px 10px; color: var(--text-dim); font-size: 0.85rem;">
         No saved media in vault.
       </div>
@@ -414,7 +437,7 @@ function updateHistoryUI() {
     return;
   }
 
-  DOM.historyList.innerHTML = '';
+  historyList.innerHTML = '';
   AppState.history.forEach(item => {
     const el = document.createElement('div');
     el.className = 'history-item-card';
@@ -422,38 +445,70 @@ function updateHistoryUI() {
       <img src="${item.thumbnail || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&q=70'}" alt="" class="history-thumb">
       <div class="history-info">
         <div class="history-item-title">${item.title}</div>
-        <div class="history-item-sub">${item.platform.toUpperCase()} • ${item.author}</div>
+        <div class="history-item-sub">${(item.platform || 'MEDIA').toUpperCase()} • ${item.author || '@creator'}</div>
       </div>
       <button type="button" class="tactile-btn" style="padding: 4px 8px; font-size: 0.72rem;">Load</button>
     `;
 
     el.querySelector('button').addEventListener('click', () => {
-      renderMediaResult(item);
-      toggleHistoryDrawer(false);
+      if (DOM.resultCard) {
+        renderMediaResult(item);
+        toggleHistoryDrawer(false);
+      } else {
+        sessionStorage.setItem('savemanager_pending_media', JSON.stringify(item));
+        window.location.href = '/';
+      }
     });
 
-    DOM.historyList.appendChild(el);
+    historyList.appendChild(el);
   });
 }
 
 function toggleHistoryDrawer(open) {
-  const isOpen = open !== undefined ? open : !DOM.historyDrawer.classList.contains('is-open');
-  DOM.historyDrawer.classList.toggle('is-open', isOpen);
-  DOM.drawerBackdrop.classList.toggle('is-open', isOpen);
+  const drawer = DOM.historyDrawer || document.getElementById('historyDrawer');
+  const backdrop = DOM.drawerBackdrop || document.getElementById('drawerBackdrop');
+  if (!drawer || !backdrop) return;
+  const isOpen = open !== undefined ? open : !drawer.classList.contains('is-open');
+  drawer.classList.toggle('is-open', isOpen);
+  backdrop.classList.toggle('is-open', isOpen);
   document.body.style.overflow = isOpen ? 'hidden' : '';
 }
 
+function setupHistoryListeners() {
+  const toggleBtn = DOM.historyToggleBtn || document.getElementById('historyToggleBtn');
+  const closeBtn = DOM.historyCloseBtn || document.getElementById('historyCloseBtn');
+  const backdrop = DOM.drawerBackdrop || document.getElementById('drawerBackdrop');
+  const clearBtn = DOM.clearHistoryBtn || document.getElementById('clearHistoryBtn');
 
-DOM.historyToggleBtn.addEventListener('click', () => toggleHistoryDrawer(true));
-DOM.historyCloseBtn.addEventListener('click', () => toggleHistoryDrawer(false));
-DOM.drawerBackdrop.addEventListener('click', () => toggleHistoryDrawer(false));
+  if (toggleBtn && !toggleBtn.dataset.vaultBound) {
+    toggleBtn.dataset.vaultBound = 'true';
+    toggleBtn.addEventListener('click', () => toggleHistoryDrawer(true));
+  }
+  if (closeBtn && !closeBtn.dataset.vaultBound) {
+    closeBtn.dataset.vaultBound = 'true';
+    closeBtn.addEventListener('click', () => toggleHistoryDrawer(false));
+  }
+  if (backdrop && !backdrop.dataset.vaultBound) {
+    backdrop.dataset.vaultBound = 'true';
+    backdrop.addEventListener('click', () => toggleHistoryDrawer(false));
+  }
+  if (clearBtn && !clearBtn.dataset.vaultBound) {
+    clearBtn.dataset.vaultBound = 'true';
+    clearBtn.addEventListener('click', () => {
+      AppState.history = [];
+      try {
+        localStorage.removeItem('savemanager_history');
+      } catch (e) {}
+      updateHistoryUI();
+      showToast('Vault cleared', 'info');
+    });
+  }
+}
 
-DOM.clearHistoryBtn.addEventListener('click', () => {
-  AppState.history = [];
-  localStorage.removeItem('savemanager_history');
-  updateHistoryUI();
-  showToast('Vault cleared', 'info');
-});
+setupHistoryListeners();
+
+// Immediately initialize theme on script evaluation
+initTheme();
 
 // Theme Manager (Dark / Light)
 function initTheme() {
@@ -461,8 +516,10 @@ function initTheme() {
   applyTheme(savedTheme);
 
   const themeToggleBtn = document.getElementById('themeToggleBtn');
-  if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', () => {
+  if (themeToggleBtn && !themeToggleBtn.dataset.themeBound) {
+    themeToggleBtn.dataset.themeBound = 'true';
+    themeToggleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
       const current = document.documentElement.getAttribute('data-theme') || 'dark';
       const nextTheme = current === 'dark' ? 'light' : 'dark';
       applyTheme(nextTheme);
@@ -627,6 +684,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const pending = sessionStorage.getItem('savemanager_pending_media');
+  if (pending && DOM.resultCard) {
+    sessionStorage.removeItem('savemanager_pending_media');
+    try {
+      const media = JSON.parse(pending);
+      renderMediaResult(media);
+    } catch (e) {}
+  }
+
+  setupHistoryListeners();
   if (typeof loadHistory === 'function') {
     loadHistory();
   }

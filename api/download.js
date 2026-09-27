@@ -31,7 +31,7 @@ export function detectPlatform(url) {
 }
 
 async function fetchFromYtDlpBackend(url) {
-  const backendUrl = process.env.YTDLP_BACKEND_URL;
+  const backendUrl = process.env.YTDLP_BACKEND_URL || 'https://savemanager-api.onrender.com';
   if (!backendUrl) return { data: null, error: null };
   try {
     const cleanBase = backendUrl.replace(/\/+$/, '');
