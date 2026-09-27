@@ -137,17 +137,28 @@ body {
 }
 
 .brand-glyph {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   background: linear-gradient(145deg, #1e2235, #121420);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   color: #fff;
   transition: transform var(--ease-spring) 0.2s;
+  overflow: hidden;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.brand-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
 }
 
 .brand:hover .brand-glyph {
@@ -2723,7 +2734,8 @@ body {
   color: #ffffff !important;
 }
 
-/* Bottom Sticky Banner Specific Styling */
+/* Bottom Sticky Sponsor Bar Styling */
+.sponsor-sticky-bar,
 .ad-sticky-bar {
   position: fixed;
   bottom: 0;
@@ -2743,10 +2755,12 @@ body {
   overflow: hidden;
 }
 
+.sponsor-hiding,
 .ad-sticky-hiding {
-  transform: translateY(105%);
+  transform: translateY(105%) !important;
 }
 
+.sponsor-sticky-inner,
 .ad-sticky-inner {
   max-width: 1100px;
   margin: 0 auto;
@@ -2758,97 +2772,88 @@ body {
   min-width: 0;
 }
 
-.ad-sticky-inner .ad-container {
-  margin: 0;
+.sponsor-sticky-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+}
+
+.sponsor-icon {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 6px;
+  background: rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  color: var(--accent-light, #818cf8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sponsor-text {
   flex: 1;
   min-width: 0;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* Sticky Ad Unit: Always Single-Row Horizontal */
-.ad-bottomSticky {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  width: 100% !important;
+.sponsor-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(99, 102, 241, 0.2);
+  color: #818cf8;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  flex-shrink: 0;
 }
 
-.ad-bottomSticky .ad-meta {
-  display: none !important;
-}
-
-.ad-bottomSticky .ad-content {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  text-align: left !important;
-  gap: 10px !important;
-  width: 100% !important;
-  min-width: 0 !important;
-  padding: 0 !important;
-}
-
-.ad-bottomSticky .ad-icon {
-  width: 28px !important;
-  height: 28px !important;
-  min-width: 28px !important;
-  border-radius: 6px !important;
-  background: rgba(99, 102, 241, 0.2) !important;
-  border: 1px solid rgba(99, 102, 241, 0.4) !important;
-  color: var(--accent-light, #818cf8) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex-shrink: 0 !important;
-}
-
-.ad-bottomSticky .ad-icon svg {
-  width: 14px !important;
-  height: 14px !important;
-}
-
-.ad-bottomSticky .ad-text-block {
-  flex: 1 !important;
-  min-width: 0 !important;
-  overflow: hidden !important;
-}
-
-.ad-bottomSticky .ad-headline {
-  font-size: 0.8rem !important;
-  font-weight: 600 !important;
+.sponsor-headline {
+  font-size: 0.8rem;
+  font-weight: 600;
   color: #ffffff;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  margin: 0 !important;
-  line-height: 1.2 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
 }
 
-
-.ad-bottomSticky .ad-description {
-  display: none !important; /* Always hidden on sticky bar */
+.sponsor-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  min-height: 30px;
+  padding: 4px 12px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #ffffff !important;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  gap: 5px;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+  transition: transform 0.15s;
 }
 
-.ad-bottomSticky .ad-cta-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: auto !important;
-  min-width: auto !important;
-  height: 30px !important;
-  min-height: 30px !important;
-  padding: 4px 12px !important;
-  font-size: 0.74rem !important;
-  font-weight: 600 !important;
-  border-radius: 6px !important;
-  white-space: nowrap !important;
-  flex-shrink: 0 !important;
-  gap: 5px !important;
+.sponsor-cta-btn:hover {
+  transform: translateY(-1px);
 }
 
+.sponsor-sticky-close,
 .ad-sticky-close {
   background: rgba(255, 255, 255, 0.08) !important;
   border: 1px solid rgba(255, 255, 255, 0.14) !important;
@@ -2869,6 +2874,7 @@ body {
   margin-left: 2px !important;
 }
 
+.sponsor-sticky-close:hover,
 .ad-sticky-close:hover {
   background: rgba(255, 255, 255, 0.18) !important;
   color: #ffffff !important;
@@ -2880,96 +2886,69 @@ body {
   padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
 }
 
-/* Mobile Sticky Bar Specific Tuning */
+/* Light Theme for Sponsors */
+[data-theme="light"] .sponsor-sticky-bar,
+[data-theme="light"] .ad-sticky-bar {
+  background: rgba(255, 255, 255, 0.96);
+  border-top-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .sponsor-headline {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .sponsor-sticky-close,
+[data-theme="light"] .ad-sticky-close {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  color: #475569 !important;
+}
+
+[data-theme="light"] .sponsor-sticky-close:hover,
+[data-theme="light"] .ad-sticky-close:hover {
+  background: rgba(0, 0, 0, 0.1) !important;
+  color: #0f172a !important;
+}
+
+/* Mobile Specific Tuning */
 @media (max-width: 640px) {
+  .sponsor-sticky-bar,
   .ad-sticky-bar {
     padding: 6px 10px;
     padding-bottom: max(6px, env(safe-area-inset-bottom, 0px));
   }
 
-  .ad-sticky-inner {
+  .sponsor-sticky-card {
     gap: 8px;
   }
 
-  .ad-bottomSticky .ad-content {
-    gap: 8px !important;
+  .sponsor-icon {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
   }
 
-  .ad-bottomSticky .ad-icon {
-    width: 26px !important;
-    height: 26px !important;
-    min-width: 26px !important;
+  .sponsor-badge {
+    display: none;
   }
 
-  .ad-bottomSticky .ad-icon svg {
-    width: 13px !important;
-    height: 13px !important;
+  .sponsor-headline {
+    font-size: 0.74rem;
   }
 
-  .ad-bottomSticky .ad-headline {
-    font-size: 0.74rem !important;
+  .sponsor-cta-btn {
+    height: 28px;
+    min-height: 28px;
+    padding: 3px 8px;
+    font-size: 0.68rem;
   }
 
-  .ad-bottomSticky .ad-cta-btn {
-    height: 28px !important;
-    min-height: 28px !important;
-    padding: 3px 9px !important;
-    font-size: 0.7rem !important;
-    gap: 4px !important;
-  }
-
-  .ad-bottomSticky .ad-cta-btn svg {
-    width: 11px !important;
-    height: 11px !important;
-  }
-
+  .sponsor-sticky-close,
   .ad-sticky-close {
     width: 24px !important;
     height: 24px !important;
     min-width: 24px !important;
     font-size: 14px !important;
   }
-}
-
-
-/* Light Theme for Ads */
-[data-theme="light"] .ad-unit {
-  background: #ffffff;
-  border-color: rgba(0, 0, 0, 0.08);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
-}
-
-[data-theme="light"] .ad-unit:hover {
-  background: #f8fafc;
-  border-color: rgba(99, 102, 241, 0.4);
-}
-
-[data-theme="light"] .ad-headline {
-  color: #0f172a;
-}
-
-[data-theme="light"] .ad-bottomSticky .ad-headline {
-  color: #0f172a !important;
-}
-
-
-[data-theme="light"] .ad-description {
-  color: #475569;
-}
-
-[data-theme="light"] .ad-sticky-bar {
-  background: rgba(255, 255, 255, 0.94);
-  border-top-color: rgba(0, 0, 0, 0.08);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
-}
-
-[data-theme="light"] .ad-sticky-close {
-  background: rgba(0, 0, 0, 0.05);
-  border-color: rgba(0, 0, 0, 0.1);
-  color: #475569;
-}
-
-[data-theme="light"] .ad-sticky-close:hover {
-  background: rgba(0, 0, 0, 0.1);
-  color: #0f172a;
 }

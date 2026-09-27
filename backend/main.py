@@ -246,7 +246,7 @@ async def extract_media(request: Request, url: str = Query(None)):
         },
         'extractor_args': {
             'youtube': {
-                'player_client': ['android', 'ios', 'tv']
+                'player_client': ['android', 'ios']
             }
         }
     }
