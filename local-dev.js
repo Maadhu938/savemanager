@@ -119,8 +119,12 @@ const server = http.createServer(async (req, res) => {
 
   fs.stat(filePath, (err, stats) => {
     if (err || !stats.isFile()) {
-      // Fallback to index.html for SPA-like experience
-      filePath = path.join(__dirname, 'index.html');
+      const htmlPath = filePath + '.html';
+      if (fs.existsSync(htmlPath)) {
+        filePath = htmlPath;
+      } else {
+        filePath = path.join(__dirname, 'index.html');
+      }
     }
 
     const ext = path.extname(filePath).toLowerCase();

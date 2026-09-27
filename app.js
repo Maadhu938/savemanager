@@ -582,32 +582,53 @@ document.addEventListener('keydown', (e) => {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-  DOM.urlInput.addEventListener('input', updateUrlDetectionUI);
-  DOM.clearInputBtn.addEventListener('click', () => {
-    DOM.urlInput.value = '';
-    updateUrlDetectionUI();
-    DOM.urlInput.focus();
-  });
-  DOM.pasteBtn.addEventListener('click', pasteFromClipboard);
-
-  DOM.downloadForm.addEventListener('submit', handleDownloadSubmit);
-  DOM.errorCloseBtn.addEventListener('click', hideError);
-
-  DOM.segmentItems.forEach(item => {
-    item.addEventListener('click', () => {
-      const p = item.getAttribute('data-platform');
-      switchPlatformTab(p);
+  if (DOM.urlInput) {
+    DOM.urlInput.addEventListener('input', updateUrlDetectionUI);
+  }
+  if (DOM.clearInputBtn) {
+    DOM.clearInputBtn.addEventListener('click', () => {
+      if (DOM.urlInput) {
+        DOM.urlInput.value = '';
+        updateUrlDetectionUI();
+        DOM.urlInput.focus();
+      }
     });
-  });
+  }
+  if (DOM.pasteBtn) {
+    DOM.pasteBtn.addEventListener('click', pasteFromClipboard);
+  }
 
-  document.querySelectorAll('.sample-token').forEach(token => {
-    token.addEventListener('click', () => {
-      DOM.urlInput.value = token.getAttribute('data-sample');
-      updateUrlDetectionUI();
-      handleDownloadSubmit();
+  if (DOM.downloadForm) {
+    DOM.downloadForm.addEventListener('submit', handleDownloadSubmit);
+  }
+  if (DOM.errorCloseBtn) {
+    DOM.errorCloseBtn.addEventListener('click', hideError);
+  }
+
+  if (DOM.segmentItems && DOM.segmentItems.length > 0) {
+    DOM.segmentItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const p = item.getAttribute('data-platform');
+        switchPlatformTab(p);
+      });
     });
-  });
+  }
 
-  loadHistory();
+  const sampleTokens = document.querySelectorAll('.sample-token');
+  if (sampleTokens && sampleTokens.length > 0) {
+    sampleTokens.forEach(token => {
+      token.addEventListener('click', () => {
+        if (DOM.urlInput) {
+          DOM.urlInput.value = token.getAttribute('data-sample');
+          updateUrlDetectionUI();
+          handleDownloadSubmit();
+        }
+      });
+    });
+  }
+
+  if (typeof loadHistory === 'function') {
+    loadHistory();
+  }
   initTheme();
 });

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About SaveManager | Mission, Architecture & Standards</title>
+  <meta name="description"
+    content="Discover the mission, technology stack, and editorial standards behind SaveManager, the premier media manifest extraction utility for creators and editors.">
+  <link rel="canonical" href="https://savemanager.site/about">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:title" content="About SaveManager | Mission & Architecture">
+  <meta property="og:description"
+    content="Discover how SaveManager empowers creators and video editors with client-side manifest extraction and media analysis.">
+  <meta property="og:url" content="https://savemanager.site/about">
+  <meta property="og:type" content="website">
+
+  <link rel="icon" type="image/jpeg" href="logo.jpg">
+  <link rel="apple-touch-icon" href="logo.jpg">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="mesh-glow"></div>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner container">
+      <a href="/" class="brand" id="logoLink">
+        <img src="logo.jpg" alt="SaveManager Logo" class="brand-logo-img">
+        <div class="brand-text">
+          <span>SaveManager</span>
+          <span class="brand-sub">v2.4</span>
+        </div>
+      </a>
+
+      <nav class="nav-cluster">
+        <a href="/" class="nav-link">Downloader</a>
+        <a href="/blog" class="nav-link">Guides & Blog</a>
+        <a href="/about" class="nav-link" style="color: var(--accent-light);">About</a>
+        <a href="/contact" class="nav-link">Contact</a>
+      </nav>
+
+      <div class="action-cluster">
+        <button type="button" class="theme-icon-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme"
+          aria-label="Toggle Theme">
+          <svg class="theme-icon moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="content-page container">
+    <div class="content-hero">
+      <div class="content-hero-badge">Engineering & Integrity</div>
+      <h1 class="content-hero-title">Empowering Digital Archivists & Video Creators</h1>
+      <p class="content-hero-desc">
+        SaveManager is an open, client-centric media manifest extractor built for filmmakers, research archivists, and
+        content curators who need pristine video and audio inspection.
+      </p>
+    </div>
+
+    <div class="legal-layout">
+      <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span class="breadcrumb-separator">/</span>
+        <a href="/about" aria-current="page">About Us</a>
+      </nav>
+
+      <article class="prose-card">
+        <h2>1. Our Story & Purpose</h2>
+        <p>
+          In an era where digital content disappears at the whim of platform algorithms, link rot, and sudden takedowns,
+          content creators, documentary editors, and academic researchers require dependable tools to inspect media
+          manifests and retain local offline copies of their creative assets.
+        </p>
+        <p>
+          Founded in 2026, <strong>SaveManager</strong> was engineered as an antidote to bloated, pop-up-riddled,
+          malware-infested download websites. We believe media extraction should be transparent, lightning fast, and
+          architecturally respectful of user privacy.
+        </p>
+
+        <h2>2. Our Core Principles</h2>
+        <ul>
+          <li><strong>Zero Persistent Storage:</strong> We do not keep, sell, or index user videos. When you download a
+            manifest, the bytes transfer through encrypted streams directly into your device.</li>
+          <li><strong>Studio-Grade Output:</strong> Unlike ordinary tools that compress or degrade video quality,
+            SaveManager preserves original bitrates up to 4K Ultra-HD with synchronized pristine AAC/Opus audio.</li>
+          <li><strong>Tactile, Beautiful Interface:</strong> Inspired by high-end audio engineering hardware and modern
+            SaaS standards (Linear, Raycast), our UI is clean, responsive, and available in both Dark and Light modes.
+          </li>
+          <li><strong>Educational Transparency:</strong> Through our comprehensive <a href="/blog">Guides & Knowledge
+              Hub</a>, we publish in-depth technical analyses explaining container formats, video codecs, and fair-use
+            copyright laws.</li>
+        </ul>
+
+        <h2>3. Technical Architecture</h2>
+        <p>
+          SaveManager utilizes a hybrid distributed architecture:
+        </p>
+        <ul>
+          <li><strong>Manifest Extraction Engine:</strong> Our backend parses DASH (Dynamic Adaptive Streaming over
+            HTTP) and HLS (HTTP Live Streaming) manifests to uncover unthrottled direct media URLs.</li>
+          <li><strong>Remuxing Pipeline:</strong> For modern platforms that serve video and audio on separate tracks
+            (such as YouTube 1080p and 4K), our server remuxes streams on the fly using standard MPEG-4 FastStart
+            (<code>-movflags +faststart</code>), relocating the <code>moov</code> metadata atom to the front of the file
+            so videos play instantly on mobile phone players (Android, iOS) without audio delay.</li>
+          <li><strong>Edge CDN Optimization:</strong> Frontend assets are cached globally via Vercel Edge Networks,
+            ensuring sub-50ms latency across North America, Europe, and Asia.</li>
+        </ul>
+
+        <h2>4. Editorial & Research Standards</h2>
+        <p>
+          All guides, tutorials, and technical explainers published on SaveManager undergo rigorous fact-checking by
+          video engineers with deep knowledge of FFmpeg, WebRTC, and media containers. We do not promote copyright
+          infringement; our guides emphasize legal fair-use archiving, creator backup workflows, and codec optimization.
+        </p>
+
+        <h2>5. Meet the Team & Community</h2>
+        <p>
+          SaveManager is maintained by an independent group of open-source contributors, videographers, and distributed
+          systems developers. We welcome community suggestions, bug reports, and partnership inquiries.
+        </p>
+
+        <div class="prose-callout success">
+          <strong>Get in Touch:</strong><br>
+          Have questions or want to partner with us? Visit our <a href="/contact">Contact Page</a> or write directly to
+          our engineering desk at <a href="mailto:contact@savemanager.site">contact@savemanager.site</a>.
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-grid container">
+      <div>
+        <div class="brand" style="margin-bottom: 12px;">
+          <img src="logo.jpg" alt="SaveManager Logo" class="brand-logo-img">
+          <span class="brand-text">SaveManager</span>
+        </div>
+        <p class="footer-desc">
+          Professional media manifest extractor for creators, editors, and curators.
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <h4>Engines</h4>
+        <ul>
+          <li><a href="/#instagram">Instagram Reels</a></li>
+          <li><a href="/#facebook">Facebook Video</a></li>
+          <li><a href="/#pinterest">Pinterest Pin</a></li>
+          <li><a href="/#youtube">YouTube Shorts</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Resources & Blog</h4>
+        <ul>
+          <li><a href="/blog">Creator Knowledge Base</a></li>
+          <li><a href="/blog/how-to-download-youtube-videos-in-1080p-and-4k">YouTube 1080p Guide</a></li>
+          <li><a href="/blog/video-codecs-explained-mp4-vs-webm-h264-vs-av1">Video Codecs Explained</a></li>
+          <li><a href="/sitemap.xml">XML Sitemap</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Company & Legal</h4>
+        <ul>
+          <li><a href="/about" style="color: var(--accent-light);">About Us</a></li>
+          <li><a href="/contact">Contact Support</a></li>
+          <li><a href="/dmca">DMCA Notice</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom container">
+      <span>&copy; 2026 SaveManager. Independent creator tool. Not affiliated with Meta, Instagram, Pinterest, or
+        YouTube.</span>
+      <span style="font-family: var(--font-mono); font-size: 0.74rem;">SSL 256-BIT ENCRYPTED</span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
