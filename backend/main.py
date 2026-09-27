@@ -11,10 +11,14 @@ from fastapi.responses import StreamingResponse
 import yt_dlp
 import os
 import re
+import json
+import time
+import shutil
+import tempfile
 import subprocess
 from urllib.parse import quote, unquote
 
-app = FastAPI(title="SaveManager yt-dlp Extractor Engine", version="1.1.0")
+app = FastAPI(title="SaveManager yt-dlp Extractor Engine", version="1.2.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -47,24 +51,109 @@ def detect_platform(url: str) -> str:
         return 'tiktok'
     return 'video'
 
-def get_instagram_cookies():
-    """Extract cookies from environment variable or cookies.txt file"""
+def get_ffmpeg_binary() -> str:
+    """Find system ffmpeg or fallback to imageio-ffmpeg static binary"""
+    sys_ffmpeg = shutil.which("ffmpeg")
+    if sys_ffmpeg:
+        return sys_ffmpeg
+    try:
+        import imageio_ffmpeg
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        return "ffmpeg"
+
+def ensure_cookie_file() -> str | None:
+    """
+    Ensures a valid Netscape-formatted cookie file exists.
+    Checks:
+    1. Local cookies.txt
+    2. INSTAGRAM_COOKIE or INSTAGRAM_SESSIONID environment variable:
+       - Netscape format
+       - JSON format from browser extensions
+       - Key-value string (sessionid=...; ds_user_id=...)
+       - Raw sessionid token
+    """
+    if os.path.exists("cookies.txt"):
+        return "cookies.txt"
+
     cookie_str = os.environ.get("INSTAGRAM_COOKIE") or os.environ.get("INSTAGRAM_SESSIONID")
-    if cookie_str:
-        if "sessionid=" not in cookie_str and len(cookie_str) > 10:
-            return f"sessionid={cookie_str};"
-        return cookie_str
-    return None
+    if not cookie_str:
+        return None
+
+    target_path = os.path.join(tempfile.gettempdir(), "ig_cookies.txt")
+    cookie_str = cookie_str.strip()
+
+    # Case 1: Already Netscape format
+    if cookie_str.startswith("# Netscape") or "\tTRUE\t" in cookie_str:
+        with open(target_path, "w", encoding="utf-8") as f:
+            f.write(cookie_str)
+        return target_path
+
+    cookies_dict = {}
+
+    # Case 2: JSON format from extension
+    if cookie_str.startswith("[") and cookie_str.endswith("]"):
+        try:
+            items = json.loads(cookie_str)
+            for item in items:
+                n = item.get("name")
+                v = item.get("value")
+                if n and v:
+                    cookies_dict[n] = v
+        except Exception:
+            pass
+
+    # Case 3: Key-Value pairs ("sessionid=...; ds_user_id=...")
+    if not cookies_dict and ("=" in cookie_str):
+        parts = cookie_str.split(";")
+        for part in parts:
+            if "=" in part:
+                k, v = part.strip().split("=", 1)
+                k = k.strip()
+                v = v.strip()
+                if k and v:
+                    cookies_dict[k] = v
+
+    # Case 4: Bare sessionid string
+    if not cookies_dict and len(cookie_str) > 10 and " " not in cookie_str:
+        cookies_dict["sessionid"] = cookie_str
+
+    if not cookies_dict:
+        return None
+
+    # Write out Netscape HTTP Cookie File
+    expiry = int(time.time()) + 31536000  # 1 year
+    lines = [
+        "# Netscape HTTP Cookie File",
+        "# http://curl.haxx.se/rfc/cookie_spec.html",
+        "# This is a generated file!  Do not edit.",
+        ""
+    ]
+
+    for name, value in cookies_dict.items():
+        clean_val = value.strip('"\' ;')
+        lines.append(f".instagram.com\tTRUE\t/\tTRUE\t{expiry}\t{name}\t{clean_val}")
+        lines.append(f"www.instagram.com\tFALSE\t/\tTRUE\t{expiry}\t{name}\t{clean_val}")
+        lines.append(f"i.instagram.com\tFALSE\t/\tTRUE\t{expiry}\t{name}\t{clean_val}")
+
+    content = "\n".join(lines) + "\n"
+    with open(target_path, "w", encoding="utf-8") as f:
+        f.write(content)
+
+    return target_path
 
 @app.api_route("/", methods=["GET", "HEAD", "OPTIONS", "POST"])
 @app.api_route("/health", methods=["GET", "HEAD", "OPTIONS", "POST"])
 def health_check():
     """UptimeRobot & Health Monitor Endpoint (Supports GET, HEAD, OPTIONS, POST)"""
+    cookie_path = ensure_cookie_file()
+    ffmpeg_bin = get_ffmpeg_binary()
     return {
         "status": "online",
         "service": "SaveManager yt-dlp Engine",
         "yt_dlp_version": yt_dlp.version.__version__,
-        "has_cookies": bool(get_instagram_cookies() or os.path.exists("cookies.txt"))
+        "has_cookies": bool(cookie_path),
+        "has_ffmpeg": bool(shutil.which(ffmpeg_bin) or os.path.exists(ffmpeg_bin) or ffmpeg_bin == "ffmpeg")
     }
 
 @app.get("/mux")
@@ -89,16 +178,21 @@ async def mux_streams(
         referer = "https://www.pinterest.com/"
 
     headers_opt = f"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\r\nReferer: {referer}\r\n"
+    ffmpeg_bin = get_ffmpeg_binary()
 
     cmd = [
-        "ffmpeg",
+        ffmpeg_bin,
         "-y",
         "-headers", headers_opt,
         "-i", video_url,
         "-headers", headers_opt,
         "-i", audio_url,
+        "-map", "0:v:0",
+        "-map", "1:a:0?",
         "-c:v", "copy",
         "-c:a", "aac",
+        "-b:a", "192k",
+        "-shortest",
         "-movflags", "frag_keyframe+empty_moov+default_base_moof",
         "-f", "mp4",
         "pipe:1"
@@ -147,12 +241,15 @@ async def extract_media(request: Request, url: str = Query(None)):
     }
 
     # Authenticated Session support for age-restricted / audience-restricted content
-    if os.path.exists("cookies.txt"):
-        ydl_opts['cookiefile'] = "cookies.txt"
-    else:
-        ig_cookie = get_instagram_cookies()
-        if ig_cookie:
-            ydl_opts['http_headers']['Cookie'] = ig_cookie
+    cookie_path = ensure_cookie_file()
+    if cookie_path:
+        ydl_opts['cookiefile'] = cookie_path
+        raw_cookie = os.environ.get("INSTAGRAM_COOKIE") or os.environ.get("INSTAGRAM_SESSIONID")
+        if raw_cookie:
+            if "sessionid=" not in raw_cookie and len(raw_cookie) > 10 and "=" not in raw_cookie:
+                ydl_opts['http_headers']['Cookie'] = f"sessionid={raw_cookie};"
+            else:
+                ydl_opts['http_headers']['Cookie'] = raw_cookie
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -171,7 +268,12 @@ async def extract_media(request: Request, url: str = Query(None)):
 
             # Sort and classify formats: Combined (Audio+Video) vs DASH Video-Only vs Audio-Only
             formats = info.get('formats') or []
-            valid_formats = [f for f in formats if f.get('url') and f.get('protocol', '').startswith(('http', 'https'))]
+            
+            # Keep all formats that have direct HTTP/HTTPS URLs (do not drop progressive formats lacking protocol key)
+            valid_formats = [
+                f for f in formats 
+                if f.get('url') and str(f.get('url', '')).startswith(('http://', 'https://'))
+            ]
 
             combined_formats = []
             video_only_formats = []
@@ -180,32 +282,42 @@ async def extract_media(request: Request, url: str = Query(None)):
             for fmt in valid_formats:
                 vc = fmt.get('vcodec') or ''
                 ac = fmt.get('acodec') or ''
+                ext = (fmt.get('ext') or 'mp4').lower()
+                height = fmt.get('height') or 0
+                width = fmt.get('width') or 0
+                fid = str(fmt.get('format_id') or '').lower()
 
-                has_video = (vc != 'none') and bool(vc)
-                # In progressive MP4s, acodec might be None or a codec name; if it is explicitly 'none', it has NO audio
-                has_audio = (ac != 'none')
+                # Audio-only:
+                # 1. vcodec is explicitly 'none' while acodec is not 'none'
+                # 2. Audio container extension (m4a, mp3, etc.) without video resolution
+                # 3. 'audio' in format_id and no height/width
+                is_audio = (vc == 'none' and ac != 'none') or \
+                           (ext in ['m4a', 'mp3', 'aac', 'opus', 'wav', 'ogg'] and height == 0 and width == 0) or \
+                           ('audio' in fid and height == 0 and width == 0)
 
-                is_progressive = (fmt.get('format_note') == 'progressive') or (has_video and has_audio and ac is not None)
-                if not has_video and (ac != 'none' or fmt.get('ext') in ['m4a', 'mp3']):
+                # Video-only (DASH stream with no audio track):
+                # In yt-dlp, acodec is explicitly 'none' when stream lacks audio
+                is_video_only = (ac == 'none') and (vc != 'none' or height > 0 or width > 0)
+
+                if is_audio:
                     audio_only_formats.append(fmt)
-                elif is_progressive or (has_video and has_audio):
-                    combined_formats.append(fmt)
-                elif has_video and (ac == 'none'):
+                elif is_video_only:
                     video_only_formats.append(fmt)
+                else:
+                    # Combined format: Video + Audio included natively (e.g. Instagram progressive MP4, YouTube format 18/22)
+                    combined_formats.append(fmt)
 
             download_options = []
             seen_labels = set()
-
-            # Host base for muxing endpoint
             base_url = str(request.base_url).rstrip('/')
 
-            # 1. Best Audio stream
+            # 1. Best Audio stream (for Audio Only option or DASH muxing)
             best_audio = None
             if audio_only_formats:
                 best_audio = sorted(audio_only_formats, key=lambda x: x.get('abr') or 0, reverse=True)[0]
 
-            # 2. Add Pre-Muxed (Combined Audio + Video) options first
-            # These are guaranteed to have sound natively without server processing
+            # 2. Add Pre-Muxed / Progressive (Combined Audio + Video) options FIRST
+            # These are GUARANTEED to have sound natively without any server processing lag
             sorted_combined = sorted(
                 combined_formats,
                 key=lambda x: (x.get('height') or 720, x.get('tbr') or 0, x.get('filesize') or 0),
@@ -227,18 +339,25 @@ async def extract_media(request: Request, url: str = Query(None)):
                         'sizeEstimate': size_str or 'Original Sound'
                     })
 
-            # 3. Add High-Resolution Muxed Options for video-only streams with audio (YouTube, Facebook, Instagram)
-            if video_only_formats and best_audio:
+            # 3. High-Resolution Muxed Options for video-only DASH streams (YouTube 1080p/4K, Facebook 1080p, Instagram 1080p)
+            audio_source = best_audio.get('url') if best_audio else (sorted_combined[0].get('url') if sorted_combined else None)
+
+            if video_only_formats and audio_source:
                 for v_fmt in sorted(video_only_formats, key=lambda x: (x.get('height') or 0, x.get('tbr') or 0), reverse=True):
                     v_h = v_fmt.get('height')
                     if not v_h:
                         continue
-                    res_tag = "Full HD" if v_h >= 1080 else "HD" if v_h >= 720 else "SD"
+                    
+                    # If this exact resolution is already offered with native audio, don't duplicate
+                    if any(c.get('height') == v_h for c in sorted_combined):
+                        continue
+
+                    res_tag = "4K Ultra HD" if v_h >= 2160 else "2K Quad HD" if v_h >= 1440 else "Full HD" if v_h >= 1080 else "HD" if v_h >= 720 else "SD"
                     lbl = f"{v_h}p {res_tag} (Audio Included)"
                     if lbl not in seen_labels:
                         seen_labels.add(lbl)
                         mux_filename = f"{platform}_{info.get('id', 'video')}_{v_h}p.mp4"
-                        mux_url = f"{base_url}/mux?video_url={quote(v_fmt['url'])}&audio_url={quote(best_audio['url'])}&filename={quote(mux_filename)}"
+                        mux_url = f"{base_url}/mux?video_url={quote(v_fmt['url'])}&audio_url={quote(audio_source)}&filename={quote(mux_filename)}"
                         download_options.append({
                             'label': lbl,
                             'quality': f"{v_h}p",
@@ -247,15 +366,35 @@ async def extract_media(request: Request, url: str = Query(None)):
                             'sizeEstimate': format_bytes(v_fmt.get('filesize') or v_fmt.get('filesize_approx')) or 'Master Quality'
                         })
 
-            # 4. Fallback if no combined formats detected
-            if not download_options and info.get('url'):
-                download_options.append({
-                    'label': 'HD Video (Master Stream)',
-                    'quality': 'HD',
-                    'format': 'mp4',
-                    'url': info.get('url'),
-                    'sizeEstimate': format_bytes(info.get('filesize')) or 'Ready'
-                })
+            # 4. Fallback if no options were generated
+            if not download_options:
+                if sorted_combined:
+                    download_options.append({
+                        'label': 'HD Video (Audio Included)',
+                        'quality': 'HD',
+                        'format': 'mp4',
+                        'url': sorted_combined[0]['url'],
+                        'sizeEstimate': 'Ready'
+                    })
+                elif info.get('url'):
+                    if audio_source:
+                        mux_filename = f"{platform}_{info.get('id', 'video')}_master.mp4"
+                        mux_url = f"{base_url}/mux?video_url={quote(info['url'])}&audio_url={quote(audio_source)}&filename={quote(mux_filename)}"
+                        download_options.append({
+                            'label': 'HD Video (Audio Included)',
+                            'quality': 'HD',
+                            'format': 'mp4',
+                            'url': mux_url,
+                            'sizeEstimate': 'Ready'
+                        })
+                    else:
+                        download_options.append({
+                            'label': 'HD Video (Video Only)',
+                            'quality': 'HD',
+                            'format': 'mp4',
+                            'url': info.get('url'),
+                            'sizeEstimate': format_bytes(info.get('filesize')) or 'Ready'
+                        })
 
             # 5. Audio Only Option
             if best_audio:
@@ -266,9 +405,16 @@ async def extract_media(request: Request, url: str = Query(None)):
                     'url': best_audio.get('url'),
                     'sizeEstimate': format_bytes(best_audio.get('filesize') or best_audio.get('filesize_approx')) or '~3-5 MB'
                 })
+            elif sorted_combined:
+                download_options.append({
+                    'label': "Audio Track (Original Sound)",
+                    'quality': "Original AAC",
+                    'format': "mp4",
+                    'url': sorted_combined[0]['url'],
+                    'sizeEstimate': 'Audio Track'
+                })
 
-            # Determine best preview video URL (MUST have sound!)
-            # Prefer combined format so video preview plays with audio in browser
+            # Determine best preview video URL (GUARANTEED to have sound!)
             best_preview_url = None
             if sorted_combined:
                 best_preview_url = sorted_combined[0].get('url')

@@ -183,11 +183,13 @@ export default async function handler(req, res) {
       mediaData.downloadOptions = mediaData.downloadOptions.map((opt, idx) => {
         const safeExt = opt.format || (opt.label && opt.label.includes('Audio') ? 'mp3' : opt.label && opt.label.includes('Image') ? 'jpg' : 'mp4');
         const filename = `${platform}_${mediaData.id || 'media'}_${opt.quality || idx}.${safeExt}`.replace(/\s+/g, '_');
+        const isMux = opt.url && opt.url.includes('/mux?');
         return {
           ...opt,
-          proxyUrl: `/api/proxy?url=${encodeURIComponent(opt.url)}&filename=${encodeURIComponent(filename)}`
+          proxyUrl: isMux ? opt.url : `/api/proxy?url=${encodeURIComponent(opt.url)}&filename=${encodeURIComponent(filename)}`
         };
       });
+
     }
 
     return sendJson(200, {

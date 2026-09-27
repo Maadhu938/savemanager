@@ -294,7 +294,8 @@ function renderMediaResult(media) {
     row.className = 'deck-item-row';
 
     const cleanFilename = `${media.platform}_${media.id || 'media'}_${opt.quality || 'hd'}.${opt.format || 'mp4'}`.replace(/\s+/g, '_');
-    const proxyUrl = opt.proxyUrl || `/api/proxy?url=${encodeURIComponent(opt.url)}&filename=${encodeURIComponent(cleanFilename)}`;
+    const proxyUrl = opt.proxyUrl || (opt.url && opt.url.includes('/mux?') ? opt.url : `/api/proxy?url=${encodeURIComponent(opt.url)}&filename=${encodeURIComponent(cleanFilename)}`);
+
 
     row.innerHTML = `
       <div class="deck-meta-info">
