@@ -334,9 +334,6 @@ function renderMediaResult(media) {
       if (link) {
         link.addEventListener('click', () => {
           showToast('Starting file download...', 'success');
-          if (window.SaveManagerAds) {
-            window.SaveManagerAds.triggerDownloadSponsor();
-          }
         });
       }
 
@@ -356,10 +353,6 @@ function renderMediaResult(media) {
 
   resultSec.style.display = 'block';
   resultSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-  if (window.SaveManagerAds) {
-    window.SaveManagerAds.renderAllSlots();
-  }
 }
 
 // Media Play Trigger
