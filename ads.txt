@@ -1,0 +1,8 @@
+# SaveManager ads.txt (Authorized Digital Sellers)
+# Place your publisher IDs below from your ad network:
+#
+# For Google AdSense:
+# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+#
+# For Adsterra / Monetag / PropellerAds:
+# Paste the exact lines provided in your publisher dashboard.

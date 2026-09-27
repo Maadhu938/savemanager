@@ -29,6 +29,7 @@ const DOM = {
   loadingTitle: document.getElementById('loadingTitle'),
   loadingSubtitle: document.getElementById('loadingSubtitle'),
   resultSection: document.getElementById('resultSection'),
+  resultCard: document.getElementById('resultSection'),
   resPlatformName: document.getElementById('resPlatformName'),
   resMediaAuthor: document.getElementById('resMediaAuthor'),
   resMediaTitle: document.getElementById('resMediaTitle'),
@@ -166,7 +167,10 @@ function showToast(message, type = 'info') {
   setTimeout(() => {
     toast.style.opacity = '0';
     toast.style.transform = 'translateY(10px)';
-    setTimeout(() => toast.remove(), 250);
+    setTimeout(() => {
+      if (typeof toast.remove === 'function') toast.remove();
+      else if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 250);
   }, 3200);
 }
 
@@ -256,87 +260,102 @@ async function handleDownloadSubmit(e) {
 
 // Render Media Result
 function renderMediaResult(media) {
+  const resultSec = DOM.resultSection || DOM.resultCard || document.getElementById('resultSection');
+  if (!resultSec) return;
   AppState.currentMedia = media;
 
-  DOM.resPlatformName.textContent = media.platform.toUpperCase();
-  DOM.resMediaAuthor.textContent = media.author || '@creator';
-  DOM.resMediaTitle.textContent = media.title || 'Extracted Social Video';
+  if (DOM.resPlatformName) DOM.resPlatformName.textContent = (media.platform || 'MEDIA').toUpperCase();
+  if (DOM.resMediaAuthor) DOM.resMediaAuthor.textContent = media.author || '@creator';
+  if (DOM.resMediaTitle) DOM.resMediaTitle.textContent = media.title || 'Extracted Social Video';
 
   // Tech Specs
-  DOM.specContainer.textContent = media.isImagePin ? 'JPEG / WebP' : 'MP4 (H.264)';
-  DOM.specResolution.textContent = media.isImagePin ? 'Original 4K' : '1080p HD';
-  DOM.specAudio.textContent = media.isImagePin ? 'N/A' : '320kbps AAC';
+  if (DOM.specContainer) DOM.specContainer.textContent = media.isImagePin ? 'JPEG / WebP' : 'MP4 (H.264)';
+  if (DOM.specResolution) DOM.specResolution.textContent = media.isImagePin ? 'Original 4K' : '1080p HD';
+  if (DOM.specAudio) DOM.specAudio.textContent = media.isImagePin ? 'N/A' : '320kbps AAC';
 
   // Preview Video/Image
-  if (media.videoUrl) {
+  if (media.videoUrl && DOM.previewVideo) {
     DOM.previewVideo.src = media.videoUrl;
     DOM.previewVideo.poster = media.thumbnail || '';
     DOM.previewVideo.style.display = 'block';
-    DOM.previewImage.style.display = 'none';
-    DOM.playOverlayBtn.style.display = 'flex';
-    DOM.mediaDurationBadge.textContent = '1080p Master';
-  } else if (media.thumbnail) {
+    if (DOM.previewImage) DOM.previewImage.style.display = 'none';
+    if (DOM.playOverlayBtn) DOM.playOverlayBtn.style.display = 'flex';
+    if (DOM.mediaDurationBadge) DOM.mediaDurationBadge.textContent = '1080p Master';
+  } else if (media.thumbnail && DOM.previewImage) {
     DOM.previewImage.src = media.thumbnail;
     DOM.previewImage.style.display = 'block';
-    DOM.previewVideo.style.display = 'none';
-    DOM.playOverlayBtn.style.display = 'none';
-    DOM.mediaDurationBadge.textContent = 'Original JPG';
+    if (DOM.previewVideo) DOM.previewVideo.style.display = 'none';
+    if (DOM.playOverlayBtn) DOM.playOverlayBtn.style.display = 'none';
+    if (DOM.mediaDurationBadge) DOM.mediaDurationBadge.textContent = 'Original JPG';
   }
 
   // Populate Download Decks
-  DOM.downloadOptionsGrid.innerHTML = '';
-  const options = media.downloadOptions || [];
+  if (DOM.downloadOptionsGrid) {
+    DOM.downloadOptionsGrid.innerHTML = '';
+    const options = media.downloadOptions || [];
 
-  if (options.length === 0 && media.videoUrl) {
-    options.push({
-      label: '1080p HD Video',
-      quality: 'Master MP4',
-      format: 'mp4',
-      url: media.videoUrl,
-      sizeEstimate: 'Original Stream'
+    if (options.length === 0 && media.videoUrl) {
+      options.push({
+        label: '1080p HD Video',
+        quality: 'Master MP4',
+        format: 'mp4',
+        url: media.videoUrl,
+        sizeEstimate: 'Original Stream'
+      });
+    }
+
+    options.forEach((opt) => {
+      const row = document.createElement('div');
+      row.className = 'deck-item-row';
+
+      const cleanFilename = `${media.platform || 'video'}_${media.id || 'media'}_${opt.quality || 'hd'}.${opt.format || 'mp4'}`.replace(/\s+/g, '_');
+      const proxyUrl = opt.proxyUrl || (opt.url && opt.url.includes('/mux?') ? opt.url : `/api/proxy?url=${encodeURIComponent(opt.url)}&filename=${encodeURIComponent(cleanFilename)}`);
+
+      row.innerHTML = `
+        <div class="deck-meta-info">
+          <span class="deck-format-name">${opt.label}</span>
+          <span class="deck-format-sub">${opt.quality} • ${opt.sizeEstimate || 'Ready'}</span>
+        </div>
+        <a href="${proxyUrl}" 
+           download="${cleanFilename}" 
+           class="tactile-download-link"
+           target="_blank"
+           rel="noopener">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Save</span>
+        </a>
+      `;
+
+      const link = row.querySelector('.tactile-download-link');
+      if (link) {
+        link.addEventListener('click', () => {
+          showToast('Starting file download...', 'success');
+          if (window.SaveManagerAds) {
+            window.SaveManagerAds.triggerDownloadSponsor();
+          }
+        });
+      }
+
+      DOM.downloadOptionsGrid.appendChild(row);
     });
   }
 
-  options.forEach((opt) => {
-    const row = document.createElement('div');
-    row.className = 'deck-item-row';
+  // Populate URL in input if present
+  if (DOM.urlInput && (media.url || media.originalUrl)) {
+    DOM.urlInput.value = media.url || media.originalUrl;
+    updateUrlDetectionUI();
+  }
 
-    const cleanFilename = `${media.platform}_${media.id || 'media'}_${opt.quality || 'hd'}.${opt.format || 'mp4'}`.replace(/\s+/g, '_');
-    const proxyUrl = opt.proxyUrl || (opt.url && opt.url.includes('/mux?') ? opt.url : `/api/proxy?url=${encodeURIComponent(opt.url)}&filename=${encodeURIComponent(cleanFilename)}`);
+  // Hide loading & error states
+  if (DOM.loadingCard) DOM.loadingCard.style.display = 'none';
+  if (DOM.errorBanner) DOM.errorBanner.style.display = 'none';
 
-
-    row.innerHTML = `
-      <div class="deck-meta-info">
-        <span class="deck-format-name">${opt.label}</span>
-        <span class="deck-format-sub">${opt.quality} • ${opt.sizeEstimate || 'Ready'}</span>
-      </div>
-      <a href="${proxyUrl}" 
-         download="${cleanFilename}" 
-         class="tactile-download-link"
-         target="_blank"
-         rel="noopener">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-        <span>Save</span>
-      </a>
-    `;
-
-    const link = row.querySelector('.tactile-download-link');
-    link.addEventListener('click', () => {
-      showToast('Starting file download...', 'success');
-      if (window.SaveManagerAds) {
-        window.SaveManagerAds.triggerDownloadSponsor();
-      }
-    });
-
-    DOM.downloadOptionsGrid.appendChild(row);
-  });
-
-  DOM.resultSection.style.display = 'block';
-  DOM.resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  resultSec.style.display = 'block';
+  resultSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   if (window.SaveManagerAds) {
     window.SaveManagerAds.renderAllSlots();
@@ -441,6 +460,7 @@ function updateHistoryUI() {
   AppState.history.forEach(item => {
     const el = document.createElement('div');
     el.className = 'history-item-card';
+    el.style.cursor = 'pointer';
     el.innerHTML = `
       <img src="${item.thumbnail || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&q=70'}" alt="" class="history-thumb">
       <div class="history-info">
@@ -450,15 +470,22 @@ function updateHistoryUI() {
       <button type="button" class="tactile-btn" style="padding: 4px 8px; font-size: 0.72rem;">Load</button>
     `;
 
-    el.querySelector('button').addEventListener('click', () => {
-      if (DOM.resultCard) {
+    const handleLoad = (e) => {
+      if (e) e.stopPropagation();
+      const resultSec = DOM.resultSection || DOM.resultCard || document.getElementById('resultSection');
+      if (resultSec) {
         renderMediaResult(item);
         toggleHistoryDrawer(false);
+        showToast(`Loaded "${(item.title || 'media').slice(0, 28)}..."`, 'info');
       } else {
         sessionStorage.setItem('savemanager_pending_media', JSON.stringify(item));
         window.location.href = '/';
       }
-    });
+    };
+
+    el.addEventListener('click', handleLoad);
+    const btn = el.querySelector('button');
+    if (btn) btn.addEventListener('click', handleLoad);
 
     historyList.appendChild(el);
   });
@@ -685,11 +712,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const pending = sessionStorage.getItem('savemanager_pending_media');
-  if (pending && DOM.resultCard) {
+  const resultSec = DOM.resultSection || DOM.resultCard || document.getElementById('resultSection');
+  if (pending && resultSec) {
     sessionStorage.removeItem('savemanager_pending_media');
     try {
       const media = JSON.parse(pending);
       renderMediaResult(media);
+      showToast(`Loaded "${(media.title || 'media').slice(0, 25)}" from Vault`, 'info');
     } catch (e) {}
   }
 
