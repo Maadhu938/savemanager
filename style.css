@@ -2819,13 +2819,14 @@ body {
 .ad-bottomSticky .ad-headline {
   font-size: 0.8rem !important;
   font-weight: 600 !important;
-  color: #ffffff !important;
+  color: #ffffff;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   margin: 0 !important;
   line-height: 1.2 !important;
 }
+
 
 .ad-bottomSticky .ad-description {
   display: none !important; /* Always hidden on sticky bar */
@@ -2946,6 +2947,11 @@ body {
 [data-theme="light"] .ad-headline {
   color: #0f172a;
 }
+
+[data-theme="light"] .ad-bottomSticky .ad-headline {
+  color: #0f172a !important;
+}
+
 
 [data-theme="light"] .ad-description {
   color: #475569;

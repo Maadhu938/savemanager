@@ -191,11 +191,12 @@ def debug_formats(url: str):
                     "protocol": f.get("protocol"),
                     "format_note": f.get("format_note"),
                     "has_url": bool(f.get("url")),
-                    "url_snippet": f.get("url", "")[:90]
+                    "url": f.get("url")
                 }
                 for f in fmts
             ]
         }
+
 
 
 @app.get("/mux")
