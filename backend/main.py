@@ -335,6 +335,15 @@ async def extract_media(request: Request, url: str = Query(None)):
                 height = fmt.get('height') or 0
                 width = fmt.get('width') or 0
                 fid = str(fmt.get('format_id') or '').lower()
+                note = str(fmt.get('format_note') or '').lower()
+
+                # On Instagram:
+                # yt-dlp sets acodec='none' when product_media has_audio is False in GraphQL.
+                # However, Instagram's progressive MP4 formats (which are NOT dash streams)
+                # actually contain genuine AAC stereo audio!
+                if platform == 'instagram' and not fid.startswith('dash') and 'dash' not in note:
+                    combined_formats.append(fmt)
+                    continue
 
                 # Audio-only:
                 # 1. vcodec is explicitly 'none' while acodec is not 'none'
@@ -353,8 +362,9 @@ async def extract_media(request: Request, url: str = Query(None)):
                 elif is_video_only:
                     video_only_formats.append(fmt)
                 else:
-                    # Combined format: Video + Audio included natively (e.g. Instagram progressive MP4, YouTube format 18/22)
+                    # Combined format: Video + Audio included natively (e.g. YouTube format 18/22, Facebook SD/HD)
                     combined_formats.append(fmt)
+
 
             download_options = []
             seen_labels = set()
