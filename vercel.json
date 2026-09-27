@@ -1,6 +1,7 @@
 {
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/google40ea7b305669ded0.html", "destination": "/api/google-verify" },
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ],
   "headers": [
