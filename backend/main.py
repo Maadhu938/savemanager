@@ -276,11 +276,15 @@ async def extract_media(request: Request, url: str = Query(None)):
             # Sort and classify formats: Combined (Audio+Video) vs DASH Video-Only vs Audio-Only
             formats = info.get('formats') or []
             
-            # Keep all formats that have direct HTTP/HTTPS URLs (do not drop progressive formats lacking protocol key)
+            # Keep all formats that have direct HTTP/HTTPS URLs, excluding image storyboards
             valid_formats = [
                 f for f in formats 
-                if f.get('url') and str(f.get('url', '')).startswith(('http://', 'https://'))
+                if f.get('url') 
+                and str(f.get('url', '')).startswith(('http://', 'https://'))
+                and f.get('ext') not in ['mhtml']
+                and not (f.get('vcodec') == 'none' and f.get('acodec') == 'none')
             ]
+
 
             combined_formats = []
             video_only_formats = []
@@ -362,8 +366,9 @@ async def extract_media(request: Request, url: str = Query(None)):
             if video_only_formats and audio_source:
                 for v_fmt in sorted(video_only_formats, key=lambda x: (x.get('height') or 0, x.get('tbr') or 0), reverse=True):
                     v_h = v_fmt.get('height')
-                    if not v_h:
+                    if not v_h or v_h < 360:
                         continue
+
                     
                     # If this exact resolution is already offered with native audio, don't duplicate
                     if any(c.get('height') == v_h for c in sorted_combined):
