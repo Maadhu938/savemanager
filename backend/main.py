@@ -221,11 +221,16 @@ async def extract_media(request: Request, url: str = Query(None)):
     if not target_url:
         raise HTTPException(status_code=400, detail="Missing required 'url' parameter")
 
-    # Clean URL (strip tracking params for Instagram)
-    if 'instagram.com' in target_url:
-        shortcode_match = re.search(r'(?:reel|reels|p|share\/reel)\/([A-Za-z0-9_-]+)', target_url)
-        if shortcode_match:
-            target_url = f"https://www.instagram.com/reel/{shortcode_match.group(1)}/"
+    platform = detect_platform(target_url)
+
+    # Dynamic platform referer
+    referer = "https://www.instagram.com/"
+    if platform == 'youtube':
+        referer = "https://www.youtube.com/"
+    elif platform == 'facebook':
+        referer = "https://www.facebook.com/"
+    elif platform == 'pinterest':
+        referer = "https://www.pinterest.com/"
 
     ydl_opts = {
         'quiet': True,
@@ -236,20 +241,21 @@ async def extract_media(request: Request, url: str = Query(None)):
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
             'Accept-Language': 'en-US,en;q=0.9',
-            'Referer': 'https://www.instagram.com/',
+            'Referer': referer,
+        },
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['android', 'ios', 'tv']
+            }
         }
     }
 
-    # Authenticated Session support for age-restricted / audience-restricted content
+    # Authenticated Session support for age-restricted Instagram content
+    # Netscape cookiefile is strictly scoped to .instagram.com (never leaked to YouTube or other hosts)
     cookie_path = ensure_cookie_file()
     if cookie_path:
         ydl_opts['cookiefile'] = cookie_path
-        raw_cookie = os.environ.get("INSTAGRAM_COOKIE") or os.environ.get("INSTAGRAM_SESSIONID")
-        if raw_cookie:
-            if "sessionid=" not in raw_cookie and len(raw_cookie) > 10 and "=" not in raw_cookie:
-                ydl_opts['http_headers']['Cookie'] = f"sessionid={raw_cookie};"
-            else:
-                ydl_opts['http_headers']['Cookie'] = raw_cookie
+
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
