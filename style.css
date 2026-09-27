@@ -3624,3 +3624,56 @@ body {
   }
 }
 
+/* Adsterra Monetization Engine */
+.adsterra-banner-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 18px auto;
+  overflow: hidden;
+  text-align: center;
+}
+
+.adsterra-banner-728 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 4px;
+}
+
+.adsterra-banner-728 iframe {
+  max-width: 100%;
+  border: none;
+}
+
+.adsterra-native-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 28px auto;
+}
+
+.adsterra-native-banner {
+  width: 100%;
+  max-width: 900px;
+  min-height: 100px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  padding: 8px;
+}
+
+[data-theme="light"] .adsterra-banner-728,
+[data-theme="light"] .adsterra-native-banner {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+
