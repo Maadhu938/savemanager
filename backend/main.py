@@ -79,7 +79,16 @@ async def mux_streams(
     piping the result directly to the client browser with zero disk lag.
     """
     clean_filename = re.sub(r'[^a-zA-Z0-9_.-]', '_', filename)
-    headers_opt = "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\r\nReferer: https://www.instagram.com/\r\n"
+    
+    referer = "https://www.instagram.com/"
+    if "googlevideo.com" in video_url or "youtube.com" in video_url:
+        referer = "https://www.youtube.com/"
+    elif "fbcdn.net" in video_url or "facebook.com" in video_url:
+        referer = "https://www.facebook.com/"
+    elif "pinimg.com" in video_url or "pinterest.com" in video_url:
+        referer = "https://www.pinterest.com/"
+
+    headers_opt = f"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\r\nReferer: {referer}\r\n"
 
     cmd = [
         "ffmpeg",
@@ -218,23 +227,25 @@ async def extract_media(request: Request, url: str = Query(None)):
                         'sizeEstimate': size_str or 'Original Sound'
                     })
 
-            # 3. Add High-Resolution Muxed Option if higher resolution video-only stream exists
+            # 3. Add High-Resolution Muxed Options for video-only streams with audio (YouTube, Facebook, Instagram)
             if video_only_formats and best_audio:
-                best_video = sorted(video_only_formats, key=lambda x: (x.get('height') or 0, x.get('tbr') or 0), reverse=True)[0]
-                v_height = best_video.get('height') or 1080
-                max_comb_height = max([f.get('height') or 0 for f in sorted_combined], default=0)
-
-                # If the video-only DASH stream has higher resolution than combined
-                if v_height > max_comb_height:
-                    mux_filename = f"{platform}_{info.get('id', 'video')}_{v_height}p.mp4"
-                    mux_url = f"{base_url}/mux?video_url={quote(best_video['url'])}&audio_url={quote(best_audio['url'])}&filename={quote(mux_filename)}"
-                    download_options.insert(0, {
-                        'label': f"{v_height}p Full HD (Muxed with Audio)",
-                        'quality': f"{v_height}p",
-                        'format': 'mp4',
-                        'url': mux_url,
-                        'sizeEstimate': format_bytes(best_video.get('filesize') or best_video.get('filesize_approx')) or 'Master Quality'
-                    })
+                for v_fmt in sorted(video_only_formats, key=lambda x: (x.get('height') or 0, x.get('tbr') or 0), reverse=True):
+                    v_h = v_fmt.get('height')
+                    if not v_h:
+                        continue
+                    res_tag = "Full HD" if v_h >= 1080 else "HD" if v_h >= 720 else "SD"
+                    lbl = f"{v_h}p {res_tag} (Audio Included)"
+                    if lbl not in seen_labels:
+                        seen_labels.add(lbl)
+                        mux_filename = f"{platform}_{info.get('id', 'video')}_{v_h}p.mp4"
+                        mux_url = f"{base_url}/mux?video_url={quote(v_fmt['url'])}&audio_url={quote(best_audio['url'])}&filename={quote(mux_filename)}"
+                        download_options.append({
+                            'label': lbl,
+                            'quality': f"{v_h}p",
+                            'format': 'mp4',
+                            'url': mux_url,
+                            'sizeEstimate': format_bytes(v_fmt.get('filesize') or v_fmt.get('filesize_approx')) or 'Master Quality'
+                        })
 
             # 4. Fallback if no combined formats detected
             if not download_options and info.get('url'):
