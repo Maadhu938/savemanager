@@ -66,6 +66,12 @@
   padding: 0;
 }
 
+html {
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+}
+
 body {
   font-family: var(--font-main);
   background-color: var(--bg-base);
@@ -73,6 +79,8 @@ body {
   min-height: 100vh;
   line-height: 1.6;
   overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
   position: relative;
   -webkit-font-smoothing: antialiased;
   background-image: 
@@ -81,6 +89,7 @@ body {
     radial-gradient(circle at 100% 30%, rgba(225, 48, 108, 0.06) 0%, transparent 40%);
   background-size: 32px 32px, 100% 100%, 100% 100%;
 }
+
 
 .container {
   max-width: 1100px;
@@ -1302,39 +1311,52 @@ body {
   line-height: 1.65;
 }
 
-/* History Drawer */
+/* History / Media Vault Drawer */
 .history-drawer {
   position: fixed;
   top: 0;
-  right: -420px;
-  width: 400px;
-  max-width: 90vw;
-  height: 100vh;
+  right: 0;
+  width: 380px;
+  max-width: 86vw;
+  height: 100%;
+  height: 100dvh;
   background: #0d1017;
   border-left: 1px solid var(--border-prominent);
-  z-index: 200;
+  z-index: 1210;
   display: flex;
   flex-direction: column;
-  box-shadow: -15px 0 40px rgba(0, 0, 0, 0.8);
-  transition: right 0.25s var(--ease-spring);
+  box-shadow: -15px 0 45px rgba(0, 0, 0, 0.85);
+  transform: translateX(100%);
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s;
 }
 
 .history-drawer.is-open {
-  right: 0;
+  transform: translateX(0);
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .drawer-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(4px);
-  z-index: 190;
-  display: none;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1200;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s ease, visibility 0.25s;
 }
 
 .drawer-backdrop.is-open {
-  display: block;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
+
 
 .history-drawer-header {
   padding: 18px 20px;
@@ -1867,40 +1889,33 @@ body {
     line-height: 1.6;
   }
 
-  /* Ad Units & Sticky Bar on Mobile */
-  .ad-content {
+  /* In-Page Ad Cards on Mobile */
+  .ad-topBanner .ad-content,
+  .ad-inFeed .ad-content,
+  .ad-downloadReady .ad-content {
     flex-direction: column;
     text-align: center;
-    gap: 10px;
+    gap: 12px;
   }
 
-  .ad-cta-btn {
+  .ad-topBanner .ad-cta-btn,
+  .ad-inFeed .ad-cta-btn,
+  .ad-downloadReady .ad-cta-btn {
     width: 100%;
     min-height: 40px;
     justify-content: center;
   }
 
-  .ad-sticky-bar {
-    padding: 6px 12px;
-    padding-bottom: max(6px, env(safe-area-inset-bottom, 0px));
-  }
-
-  .ad-sticky-inner {
-    gap: 8px;
-  }
-
-  .ad-sticky-close {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    font-size: 1.2rem;
-  }
-
-  /* Vault Drawer & Toasts on Mobile */
+  /* Vault Drawer on Mobile: Slide-in Side View from Right to Left */
   .history-drawer {
-    width: 100vw;
-    max-width: 100vw;
+    width: 86vw;
+    max-width: 360px;
+    right: 0;
+    left: auto;
+    border-left: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: -10px 0 45px rgba(0, 0, 0, 0.9);
   }
+
 
   .history-drawer-header {
     padding: 16px;
@@ -2714,15 +2729,18 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
+  width: 100%;
+  max-width: 100vw;
   z-index: 998;
-  background: rgba(13, 17, 23, 0.94);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(13, 17, 23, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 8px 16px;
+  padding: 8px 14px;
   padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
   box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.5);
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
 }
 
 .ad-sticky-hiding {
@@ -2734,45 +2752,126 @@ body {
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
 }
 
 .ad-sticky-inner .ad-container {
   margin: 0;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
-.ad-sticky-inner .ad-unit {
-  background: transparent;
-  border: none;
-  padding: 0;
+/* Sticky Ad Unit: Always Single-Row Horizontal */
+.ad-bottomSticky {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
 }
 
-.ad-sticky-inner .ad-meta {
-  display: none;
+.ad-bottomSticky .ad-meta {
+  display: none !important;
+}
+
+.ad-bottomSticky .ad-content {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  text-align: left !important;
+  gap: 10px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+}
+
+.ad-bottomSticky .ad-icon {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  border-radius: 6px !important;
+  background: rgba(99, 102, 241, 0.2) !important;
+  border: 1px solid rgba(99, 102, 241, 0.4) !important;
+  color: var(--accent-light, #818cf8) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.ad-bottomSticky .ad-icon svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.ad-bottomSticky .ad-text-block {
+  flex: 1 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+.ad-bottomSticky .ad-headline {
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  margin: 0 !important;
+  line-height: 1.2 !important;
+}
+
+.ad-bottomSticky .ad-description {
+  display: none !important; /* Always hidden on sticky bar */
+}
+
+.ad-bottomSticky .ad-cta-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  min-width: auto !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 4px 12px !important;
+  font-size: 0.74rem !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  gap: 5px !important;
 }
 
 .ad-sticky-close {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--text-mid, #94a3b8);
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  line-height: 1;
-  cursor: pointer;
-  transition: all 0.2s;
-  flex-shrink: 0;
-  padding: 0;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: var(--text-mid, #94a3b8) !important;
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 15px !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  flex-shrink: 0 !important;
+  padding: 0 !important;
+  margin-left: 2px !important;
 }
 
 .ad-sticky-close:hover {
-  background: rgba(255, 255, 255, 0.18);
-  color: #ffffff;
-  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.18) !important;
+  color: #ffffff !important;
+  transform: scale(1.08) !important;
 }
 
 /* Ensure body does not get occluded by sticky bar */
@@ -2780,68 +2879,57 @@ body {
   padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
 }
 
-/* Mobile Adjustments for Ads */
+/* Mobile Sticky Bar Specific Tuning */
 @media (max-width: 640px) {
-  .ad-content {
-    gap: 10px;
-  }
-
   .ad-sticky-bar {
-    padding: 6px 12px;
+    padding: 6px 10px;
     padding-bottom: max(6px, env(safe-area-inset-bottom, 0px));
   }
 
-  .ad-sticky-inner .ad-content {
-    flex-wrap: nowrap;
+  .ad-sticky-inner {
     gap: 8px;
   }
 
-  .ad-sticky-inner .ad-icon {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
+  .ad-bottomSticky .ad-content {
+    gap: 8px !important;
   }
 
-  .ad-sticky-inner .ad-icon svg {
-    width: 16px;
-    height: 16px;
+  .ad-bottomSticky .ad-icon {
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
   }
 
-  .ad-sticky-inner .ad-headline {
-    font-size: 0.78rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin: 0;
+  .ad-bottomSticky .ad-icon svg {
+    width: 13px !important;
+    height: 13px !important;
   }
 
-  .ad-sticky-inner .ad-description {
-    display: none !important; /* Keep compact on mobile screens */
+  .ad-bottomSticky .ad-headline {
+    font-size: 0.74rem !important;
   }
 
-  .ad-sticky-inner .ad-cta-btn {
-    padding: 5px 10px;
-    font-size: 0.72rem;
-    min-height: 30px;
+  .ad-bottomSticky .ad-cta-btn {
+    height: 28px !important;
+    min-height: 28px !important;
+    padding: 3px 9px !important;
+    font-size: 0.7rem !important;
+    gap: 4px !important;
+  }
+
+  .ad-bottomSticky .ad-cta-btn svg {
+    width: 11px !important;
+    height: 11px !important;
   }
 
   .ad-sticky-close {
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
-  }
-
-  /* In-page ad units on mobile */
-  .ad-container:not(.ad-sticky-inner .ad-container) .ad-content {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .ad-container:not(.ad-sticky-inner .ad-container) .ad-cta-btn {
-    width: 100%;
-    justify-content: center;
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    font-size: 14px !important;
   }
 }
+
 
 /* Light Theme for Ads */
 [data-theme="light"] .ad-unit {

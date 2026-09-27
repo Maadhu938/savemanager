@@ -440,7 +440,9 @@ function toggleHistoryDrawer(open) {
   const isOpen = open !== undefined ? open : !DOM.historyDrawer.classList.contains('is-open');
   DOM.historyDrawer.classList.toggle('is-open', isOpen);
   DOM.drawerBackdrop.classList.toggle('is-open', isOpen);
+  document.body.style.overflow = isOpen ? 'hidden' : '';
 }
+
 
 DOM.historyToggleBtn.addEventListener('click', () => toggleHistoryDrawer(true));
 DOM.historyCloseBtn.addEventListener('click', () => toggleHistoryDrawer(false));
