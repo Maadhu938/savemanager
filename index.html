@@ -1,31 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <!-- Primary Meta Tags -->
   <title>SaveManager - Studio Grade Instagram Reels, Facebook, Pinterest & YouTube Downloader</title>
   <meta name="title" content="SaveManager - Studio Grade Instagram Reels, Facebook, Pinterest & YouTube Downloader">
-  <meta name="description" content="Download public Instagram Reels, Facebook Videos, Pinterest Pins, and YouTube Shorts in HD MP4 with SaveManager. Fast, free, and safe.">
-  <meta name="keywords" content="instagram reels downloader, facebook video downloader, pinterest video downloader, youtube shorts downloader, hd mp4, savemanager">
+  <meta name="description"
+    content="Download public Instagram Reels, Facebook Videos, Pinterest Pins, and YouTube Shorts in HD MP4 with SaveManager. Fast, free, and safe.">
+  <meta name="keywords"
+    content="instagram reels downloader, facebook video downloader, pinterest video downloader, youtube shorts downloader, hd mp4, savemanager">
   <meta name="author" content="SaveManager">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#090a0f">
-  
+
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://savemanager.site/">
   <meta property="og:title" content="SaveManager - Social Video Downloader">
-  <meta property="og:description" content="Fast, free social media video downloader for Instagram, Facebook, Pinterest, and YouTube.">
-  <meta property="og:image" content="https://savemanager.site/logo.png">
+  <meta property="og:description"
+    content="Fast, free social media video downloader for Instagram, Facebook, Pinterest, and YouTube.">
+  <meta property="og:image" content="https://savemanager.site/logo.jpg">
 
   <link rel="canonical" href="https://savemanager.site/">
-  <link rel="icon" type="image/png" href="logo.png">
-  <link rel="apple-touch-icon" href="logo.png">
+  <link rel="icon" type="image/png" href="logo.jpg">
+  <link rel="apple-touch-icon" href="logo.jpg">
 
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body data-active-platform="auto">
   <div class="mesh-glow"></div>
 
@@ -34,7 +39,7 @@
     <div class="header-inner container">
       <a href="/" class="brand" id="logoLink">
         <div class="brand-glyph">
-          <img src="logo.png" alt="SaveManager Logo" class="brand-logo-img">
+          <img src="logo.jpg" alt="SaveManager Logo" class="brand-logo-img">
         </div>
         <div class="brand-text">
           <span>SaveManager</span>
@@ -49,8 +54,10 @@
       </nav>
 
       <div class="action-cluster">
-        <button type="button" class="tactile-btn header-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
-          <svg class="theme-icon sun-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button type="button" class="tactile-btn header-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme"
+          aria-label="Toggle Theme">
+          <svg class="theme-icon sun-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="5"></circle>
             <line x1="12" y1="1" x2="12" y2="3"></line>
             <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -64,7 +71,8 @@
           <span id="themeToggleText" class="btn-label-text">Light</span>
         </button>
 
-        <button type="button" class="tactile-btn header-btn" id="historyToggleBtn" title="Open Media Vault" aria-label="Media Vault">
+        <button type="button" class="tactile-btn header-btn" id="historyToggleBtn" title="Open Media Vault"
+          aria-label="Media Vault">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
             <polyline points="12 6 12 12 16 14"></polyline>
@@ -93,23 +101,39 @@
     <!-- Tactile Segmented Hardware Control -->
     <div class="segmented-control" role="tablist" aria-label="Platform Engine">
       <button type="button" class="segment-item is-active" data-platform="auto" id="tab-auto">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
         <span>Auto</span>
       </button>
       <button type="button" class="segment-item" data-platform="instagram" id="tab-instagram">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+        </svg>
         <span>Instagram</span>
       </button>
       <button type="button" class="segment-item" data-platform="facebook" id="tab-facebook">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+        </svg>
         <span>Facebook</span>
       </button>
       <button type="button" class="segment-item" data-platform="pinterest" id="tab-pinterest">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345-.09.375-.291 1.199-.332 1.365-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345-.09.375-.291 1.199-.332 1.365-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z" />
+        </svg>
         <span>Pinterest</span>
       </button>
       <button type="button" class="segment-item" data-platform="youtube" id="tab-youtube">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+        </svg>
         <span>YouTube</span>
       </button>
     </div>
@@ -120,20 +144,17 @@
         <div class="input-field-chassis">
           <div class="platform-indicator-tag" id="detectedPlatformBadge">
             <span id="detectedPlatformIcon" style="display: inline-flex; align-items: center;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
             </span>
             <span id="detectedPlatformName">RAW URL</span>
           </div>
 
-          <input 
-            type="url" 
-            id="urlInput" 
-            class="native-url-input" 
-            placeholder="Paste any Instagram, Facebook, Pinterest or YouTube link..." 
-            aria-label="Video URL input"
-            required
-            spellcheck="false"
-          >
+          <input type="url" id="urlInput" class="native-url-input"
+            placeholder="Paste any Instagram, Facebook, Pinterest or YouTube link..." aria-label="Video URL input"
+            required spellcheck="false">
 
           <button type="button" class="icon-clear-btn" id="clearInputBtn" title="Clear input" style="display: none;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -155,7 +176,7 @@
           <span class="btn-text">Extract</span>
           <span class="btn-icon">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
+              <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </span>
           <!-- Bespoke Dual-Ring Button Spinner -->
@@ -182,12 +203,14 @@
     </div>
 
     <!-- Error Banner -->
-    <div class="error-banner" id="errorBanner" style="display: none; max-width: 780px; margin: 0 auto 24px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; padding: 12px 18px; text-align: left; display: none; align-items: center; justify-content: space-between;">
+    <div class="error-banner" id="errorBanner"
+      style="display: none; max-width: 780px; margin: 0 auto 24px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; padding: 12px 18px; text-align: left; display: none; align-items: center; justify-content: space-between;">
       <div>
         <strong id="errorTitle" style="color: #f87171; font-size: 0.9rem;">Resolution Error</strong>
         <p id="errorMessage" style="color: #fca5a5; font-size: 0.82rem; margin: 2px 0 0;"></p>
       </div>
-      <button type="button" id="errorCloseBtn" style="background: none; border: none; color: #f87171; font-size: 1.2rem; cursor: pointer;">&times;</button>
+      <button type="button" id="errorCloseBtn"
+        style="background: none; border: none; color: #f87171; font-size: 1.2rem; cursor: pointer;">&times;</button>
     </div>
 
     <!-- CUSTOM HAND-CRAFTED MULTI-AXIS GYROSCOPE LOADER STAGE -->
@@ -198,7 +221,8 @@
         <defs>
           <filter id="gegga">
             <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur" />
-            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 20 -10" result="inreGegga" />
+            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 20 -10"
+              result="inreGegga" />
             <feComposite in="SourceGraphic" in2="inreGegga" operator="atop" />
           </filter>
         </defs>
@@ -208,7 +232,8 @@
       <div class="snurra-stage">
         <!-- Shadow Blur Projection -->
         <svg class="skugga" width="140" height="140" viewBox="0 0 200 200">
-          <path class="halvan" d="m 164,100 c 0,-35.346224 -28.65378,-64 -64,-64 -35.346224,0 -64,28.653776 -64,64 0,35.34622 28.653776,64 64,64 35.34622,0 64,-26.21502 64,-64 0,-37.784981 -26.92058,-64 -64,-64 -37.079421,0 -65.267479,26.922736 -64,64 1.267479,37.07726 26.703171,65.05317 64,64 37.29683,-1.05317 64,-64 64,-64" />
+          <path class="halvan"
+            d="m 164,100 c 0,-35.346224 -28.65378,-64 -64,-64 -35.346224,0 -64,28.653776 -64,64 0,35.34622 28.653776,64 64,64 35.34622,0 64,-26.21502 64,-64 0,-37.784981 -26.92058,-64 -64,-64 -37.079421,0 -65.267479,26.922736 -64,64 1.267479,37.07726 26.703171,65.05317 64,64 37.29683,-1.05317 64,-64 64,-64" />
           <circle class="strecken" cx="100" cy="100" r="64" />
         </svg>
 
@@ -219,9 +244,11 @@
               <stop class="stopp1" offset="0%" />
               <stop class="stopp2" offset="100%" />
             </linearGradient>
-            <linearGradient y2="160" x2="160" y1="40" x1="40" gradientUnits="userSpaceOnUse" id="gradient" href="#linjärGradient" />
+            <linearGradient y2="160" x2="160" y1="40" x1="40" gradientUnits="userSpaceOnUse" id="gradient"
+              href="#linjärGradient" />
           </defs>
-          <path class="halvan" d="m 164,100 c 0,-35.346224 -28.65378,-64 -64,-64 -35.346224,0 -64,28.653776 -64,64 0,35.34622 28.653776,64 64,64 35.34622,0 64,-26.21502 64,-64 0,-37.784981 -26.92058,-64 -64,-64 -37.079421,0 -65.267479,26.922736 -64,64 1.267479,37.07726 26.703171,65.05317 64,64 37.29683,-1.05317 64,-64 64,-64" />
+          <path class="halvan"
+            d="m 164,100 c 0,-35.346224 -28.65378,-64 -64,-64 -35.346224,0 -64,28.653776 -64,64 0,35.34622 28.653776,64 64,64 35.34622,0 64,-26.21502 64,-64 0,-37.784981 -26.92058,-64 -64,-64 -37.079421,0 -65.267479,26.922736 -64,64 1.267479,37.07726 26.703171,65.05317 64,64 37.29683,-1.05317 64,-64 64,-64" />
           <circle class="strecken" cx="100" cy="100" r="64" />
         </svg>
       </div>
@@ -265,9 +292,10 @@
         <div class="studio-card-body">
           <!-- Monitor Preview Left -->
           <div class="media-monitor">
-            <video id="previewVideoPlayer" controls playsinline preload="metadata" poster="" style="display: none;"></video>
+            <video id="previewVideoPlayer" controls playsinline preload="metadata" poster=""
+              style="display: none;"></video>
             <img id="previewImage" src="" alt="Media Cover Preview" style="display: none;">
-            
+
             <div class="monitor-hud">
               <span class="hud-tag">RAW FEED</span>
               <span class="hud-tag" id="mediaDurationBadge">1080x1920</span>
@@ -347,14 +375,16 @@
     <div class="matrix-grid">
       <div class="matrix-card">
         <div class="card-icon-box" style="background: rgba(225, 48, 108, 0.15); color: #f43f5e;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
             <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
             <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
           </svg>
         </div>
         <h3 class="matrix-card-title">Instagram</h3>
-        <p class="matrix-card-desc">Parses Reels, IGTV, and feed videos straight from the Akamai & Meta edge networks.</p>
+        <p class="matrix-card-desc">Parses Reels, IGTV, and feed videos straight from the Akamai & Meta edge networks.
+        </p>
         <ul class="specs-list">
           <li>1080x1920 native aspect</li>
           <li>Uncompressed AAC audio track</li>
@@ -365,11 +395,13 @@
       <div class="matrix-card">
         <div class="card-icon-box" style="background: rgba(24, 119, 242, 0.15); color: #60a5fa;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            <path
+              d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
           </svg>
         </div>
         <h3 class="matrix-card-title">Facebook</h3>
-        <p class="matrix-card-desc">Extracts Facebook Reels, Watch broadcasts, and public clips with dual HD/SD streams.</p>
+        <p class="matrix-card-desc">Extracts Facebook Reels, Watch broadcasts, and public clips with dual HD/SD streams.
+        </p>
         <ul class="specs-list">
           <li>1080p HD bitstream</li>
           <li>Instant fb.watch redirection</li>
@@ -380,11 +412,13 @@
       <div class="matrix-card">
         <div class="card-icon-box" style="background: rgba(230, 0, 35, 0.15); color: #f87171;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345-.09.375-.291 1.199-.332 1.365-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/>
+            <path
+              d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345-.09.375-.291 1.199-.332 1.365-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z" />
           </svg>
         </div>
         <h3 class="matrix-card-title">Pinterest</h3>
-        <p class="matrix-card-desc">Bypasses Pinterest PWS payloads to grab uncompressed MP4 video and high-res pins.</p>
+        <p class="matrix-card-desc">Bypasses Pinterest PWS payloads to grab uncompressed MP4 video and high-res pins.
+        </p>
         <ul class="specs-list">
           <li>V_720P & original MP4 files</li>
           <li>pin.it shortlinks resolved</li>
@@ -395,11 +429,13 @@
       <div class="matrix-card">
         <div class="card-icon-box" style="background: rgba(255, 0, 0, 0.15); color: #f87171;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            <path
+              d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
           </svg>
         </div>
         <h3 class="matrix-card-title">YouTube</h3>
-        <p class="matrix-card-desc">Decodes YouTube Shorts and videos with discrete video-only and high-bitrate MP3 tracks.</p>
+        <p class="matrix-card-desc">Decodes YouTube Shorts and videos with discrete video-only and high-bitrate MP3
+          tracks.</p>
         <ul class="specs-list">
           <li>1080p Full HD & 720p streams</li>
           <li>320kbps MP3 audio rip</li>
@@ -423,7 +459,12 @@
           <span class="faq-toggle-icon">+</span>
         </summary>
         <div class="faq-answer">
-          <p>Open the Instagram or Facebook app, find the Reel or video you want, tap the <strong>Share</strong> button, and select <strong>Copy Link</strong>. Paste the link into the SaveManager search bar above and click <strong>Extract</strong>. Once processed, tap <strong>Save</strong>. On Android, it downloads straight to your Gallery; on iPhone, it saves to your Safari Downloads folder, where you can tap the file and select "Save Video" to add it to your Photos app.</p>
+          <p>Open the Instagram or Facebook app, find the Reel or video you want, tap the <strong>Share</strong> button,
+            and select <strong>Copy Link</strong>. Paste the link into the SaveManager search bar above and click
+            <strong>Extract</strong>. Once processed, tap <strong>Save</strong>. On Android, it downloads straight to
+            your Gallery; on iPhone, it saves to your Safari Downloads folder, where you can tap the file and select
+            "Save Video" to add it to your Photos app.
+          </p>
         </div>
       </details>
 
@@ -433,7 +474,8 @@
           <span class="faq-toggle-icon">+</span>
         </summary>
         <div class="faq-answer">
-          <p>No. SaveManager does not add any watermark, logo, or stamp to your downloads. You receive the clean, original video as published by the creator.</p>
+          <p>No. SaveManager does not add any watermark, logo, or stamp to your downloads. You receive the clean,
+            original video as published by the creator.</p>
         </div>
       </details>
 
@@ -443,7 +485,9 @@
           <span class="faq-toggle-icon">+</span>
         </summary>
         <div class="faq-answer">
-          <p>Yes. Whenever you process a video from Instagram, Facebook, or YouTube, SaveManager provides discrete format options including <strong>Audio Only (320kbps MP3 / AAC)</strong> so you can save sound tracks, podcasts, speeches, or background music.</p>
+          <p>Yes. Whenever you process a video from Instagram, Facebook, or YouTube, SaveManager provides discrete
+            format options including <strong>Audio Only (320kbps MP3 / AAC)</strong> so you can save sound tracks,
+            podcasts, speeches, or background music.</p>
         </div>
       </details>
 
@@ -453,7 +497,10 @@
           <span class="faq-toggle-icon">+</span>
         </summary>
         <div class="faq-answer">
-          <p>On Windows and Mac, files are placed in your default <strong>Downloads</strong> directory. On Android, videos appear in your Downloads manager and Gallery. On iPhone and iPad, downloads are saved to the <strong>Files</strong> app under the "Downloads" folder.</p>
+          <p>On Windows and Mac, files are placed in your default <strong>Downloads</strong> directory. On Android,
+            videos appear in your Downloads manager and Gallery. On iPhone and iPad, downloads are saved to the
+            <strong>Files</strong> app under the "Downloads" folder.
+          </p>
         </div>
       </details>
 
@@ -463,7 +510,8 @@
           <span class="faq-toggle-icon">+</span>
         </summary>
         <div class="faq-answer">
-          <p>Yes, SaveManager is 100% free with unlimited downloads. There are no hourly caps, daily quotas, subscriptions, or paywalls.</p>
+          <p>Yes, SaveManager is 100% free with unlimited downloads. There are no hourly caps, daily quotas,
+            subscriptions, or paywalls.</p>
         </div>
       </details>
 
@@ -473,7 +521,9 @@
           <span class="faq-toggle-icon">+</span>
         </summary>
         <div class="faq-answer">
-          <p>To adhere to user privacy and platform security guidelines, SaveManager only processes publicly accessible media. Posts, reels, and stories from private accounts cannot be extracted without personal account credentials.</p>
+          <p>To adhere to user privacy and platform security guidelines, SaveManager only processes publicly accessible
+            media. Posts, reels, and stories from private accounts cannot be extracted without personal account
+            credentials.</p>
         </div>
       </details>
 
@@ -483,7 +533,8 @@
           <span class="faq-toggle-icon">+</span>
         </summary>
         <div class="faq-answer">
-          <p>No software or extension installation is needed. SaveManager is a web utility that works directly inside any web browser on your phone, tablet, or desktop computer (Safari, Chrome, Edge, Firefox, Brave).</p>
+          <p>No software or extension installation is needed. SaveManager is a web utility that works directly inside
+            any web browser on your phone, tablet, or desktop computer (Safari, Chrome, Edge, Firefox, Brave).</p>
         </div>
       </details>
 
@@ -493,7 +544,8 @@
           <span class="faq-toggle-icon">+</span>
         </summary>
         <div class="faq-answer">
-          <p>SaveManager extracts the highest available master resolution uploaded by the creator, including 1080p Full HD, 720p HD, and original resolution 4K images for Pinterest pins.</p>
+          <p>SaveManager extracts the highest available master resolution uploaded by the creator, including 1080p Full
+            HD, 720p HD, and original resolution 4K images for Pinterest pins.</p>
         </div>
       </details>
     </div>
@@ -510,8 +562,10 @@
         <h3 style="font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;">Media Vault</h3>
       </div>
       <div style="display: flex; gap: 8px;">
-        <button type="button" class="tactile-btn" id="clearHistoryBtn" style="padding: 4px 10px; font-size: 0.76rem;">Clear</button>
-        <button type="button" id="historyCloseBtn" style="background: none; border: none; color: var(--text-mid); font-size: 1.4rem; cursor: pointer;">&times;</button>
+        <button type="button" class="tactile-btn" id="clearHistoryBtn"
+          style="padding: 4px 10px; font-size: 0.76rem;">Clear</button>
+        <button type="button" id="historyCloseBtn"
+          style="background: none; border: none; color: var(--text-mid); font-size: 1.4rem; cursor: pointer;">&times;</button>
       </div>
     </div>
     <div class="history-list" id="historyList"></div>
@@ -521,8 +575,10 @@
   <!-- Bottom Sticky Sponsor Bar (Hidden by default to prevent empty bars if blocked) -->
   <div class="sponsor-sticky-bar" id="sponsor-sticky-container" style="display: none;">
     <div class="sponsor-sticky-inner">
-      <div class="sponsor-slot" data-sponsor-slot="bottomSticky" data-ad-slot="bottomSticky" style="flex: 1; min-width: 0;"></div>
-      <button type="button" class="sponsor-sticky-close" id="sponsor-sticky-close" aria-label="Dismiss recommendation">&times;</button>
+      <div class="sponsor-slot" data-sponsor-slot="bottomSticky" data-ad-slot="bottomSticky"
+        style="flex: 1; min-width: 0;"></div>
+      <button type="button" class="sponsor-sticky-close" id="sponsor-sticky-close"
+        aria-label="Dismiss recommendation">&times;</button>
     </div>
   </div>
 
@@ -535,7 +591,7 @@
       <div>
         <div class="brand" style="margin-bottom: 12px;">
           <div class="brand-glyph">
-            <img src="logo.png" alt="SaveManager Logo" class="brand-logo-img">
+            <img src="logo.jpg" alt="SaveManager Logo" class="brand-logo-img">
           </div>
           <span class="brand-text">SaveManager</span>
         </div>
@@ -576,13 +632,15 @@
     </div>
 
     <div class="footer-bottom container">
-      <span>&copy; 2026 SaveManager. Independent creator tool. Not affiliated with Meta, Instagram, Pinterest, or YouTube.</span>
+      <span>&copy; 2026 SaveManager. Independent creator tool. Not affiliated with Meta, Instagram, Pinterest, or
+        YouTube.</span>
       <span style="font-family: var(--font-mono); font-size: 0.74rem;">SSL 256-BIT ENCRYPTED</span>
     </div>
   </footer>
 
   <!-- Legal Document Modal -->
-  <div class="legal-modal-backdrop" id="legalModalBackdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="legalModalTitle">
+  <div class="legal-modal-backdrop" id="legalModalBackdrop" style="display: none;" role="dialog" aria-modal="true"
+    aria-labelledby="legalModalTitle">
     <div class="legal-modal-box">
       <div class="legal-modal-header">
         <h3 id="legalModalTitle">Terms of Service</h3>
@@ -599,4 +657,5 @@
   <script src="sponsor.js"></script>
   <script src="app.js"></script>
 </body>
+
 </html>

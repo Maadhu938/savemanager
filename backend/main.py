@@ -148,12 +148,15 @@ def health_check():
     """UptimeRobot & Health Monitor Endpoint (Supports GET, HEAD, OPTIONS, POST)"""
     cookie_path = ensure_cookie_file()
     ffmpeg_bin = get_ffmpeg_binary()
+    node_bin = shutil.which("node") or shutil.which("deno")
     return {
         "status": "online",
         "service": "SaveManager yt-dlp Engine",
         "yt_dlp_version": yt_dlp.version.__version__,
         "has_cookies": bool(cookie_path),
-        "has_ffmpeg": bool(shutil.which(ffmpeg_bin) or os.path.exists(ffmpeg_bin) or ffmpeg_bin == "ffmpeg")
+        "has_ffmpeg": bool(shutil.which(ffmpeg_bin) or os.path.exists(ffmpeg_bin) or ffmpeg_bin == "ffmpeg"),
+        "has_node": bool(node_bin),
+        "node_path": node_bin
     }
 
 @app.get("/mux")
@@ -243,13 +246,15 @@ async def extract_media(request: Request, url: str = Query(None)):
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
             'Accept-Language': 'en-US,en;q=0.9',
             'Referer': referer,
-        },
-        'extractor_args': {
-            'youtube': {
-                'player_client': ['android', 'ios']
-            }
         }
     }
+
+    # Enable challenge solver (Node/Deno) so YouTube 720p, 1080p, 4K and audio streams are fully decrypted
+    for rt in ['node', 'deno', 'bun', 'quickjs']:
+        if shutil.which(rt):
+            ydl_opts['js_runtimes'] = {rt: {}}
+            ydl_opts['remote_components'] = ['ejs:github']
+            break
 
     # Authenticated Session support for age-restricted Instagram content
     # Netscape cookiefile is strictly scoped to .instagram.com (never leaked to YouTube or other hosts)
@@ -435,6 +440,19 @@ async def extract_media(request: Request, url: str = Query(None)):
                     'url': sorted_combined[0]['url'],
                     'sizeEstimate': 'Audio Track'
                 })
+
+            # Sort video options highest resolution first (4K, 2K, 1080p, 720p, etc.), keeping Audio Only at the bottom
+            def option_sort_key(opt):
+                if 'Audio Only' in opt['label'] or 'Audio Track' in opt['label']:
+                    return -1
+                m = re.search(r'(\d+)p', opt.get('quality', ''))
+                if m:
+                    return int(m.group(1))
+                if 'HD' in opt.get('quality', ''):
+                    return 720
+                return 360
+
+            download_options.sort(key=option_sort_key, reverse=True)
 
             # Determine best preview video URL (GUARANTEED to have sound!)
             best_preview_url = None
