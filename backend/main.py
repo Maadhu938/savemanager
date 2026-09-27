@@ -160,7 +160,6 @@ def health_check():
     }
 
 @app.get("/mux")
-
 async def mux_streams(
     video_url: str = Query(..., description="Direct video stream URL"),
     audio_url: str = Query(..., description="Direct audio stream URL"),
@@ -168,10 +167,12 @@ async def mux_streams(
 ):
     """
     On-the-fly FFmpeg DASH Muxer:
-    Combines separate video stream and audio stream into a single MP4 file with sound,
-    piping the result directly to the client browser with zero disk lag.
+    Combines separate video stream and audio stream into a single standard MP4 file with AAC sound,
+    with faststart moov atom header for full compatibility on all mobile devices and desktop players.
     """
     clean_filename = re.sub(r'[^a-zA-Z0-9_.-]', '_', filename)
+    if not clean_filename.endswith('.mp4'):
+        clean_filename += '.mp4'
     
     referer = "https://www.instagram.com/"
     if "googlevideo.com" in video_url or "youtube.com" in video_url:
@@ -183,6 +184,8 @@ async def mux_streams(
 
     headers_opt = f"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\r\nReferer: {referer}\r\n"
     ffmpeg_bin = get_ffmpeg_binary()
+
+    temp_out = os.path.join(tempfile.gettempdir(), f"mux_{int(time.time()*1000)}_{clean_filename}")
 
     cmd = [
         ffmpeg_bin,
@@ -196,20 +199,44 @@ async def mux_streams(
         "-c:v", "copy",
         "-c:a", "aac",
         "-b:a", "192k",
+        "-avoid_negative_ts", "make_zero",
         "-shortest",
-        "-movflags", "frag_keyframe+empty_moov+default_base_moof",
-        "-f", "mp4",
-        "pipe:1"
+        "-movflags", "+faststart",
+        temp_out
     ]
 
     try:
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60)
+        if proc.returncode != 0 or not os.path.exists(temp_out):
+            raise Exception("FFmpeg failed to produce output file")
+
+        def iterfile():
+            try:
+                with open(temp_out, "rb") as f:
+                    while chunk := f.read(65536):
+                        yield chunk
+            finally:
+                if os.path.exists(temp_out):
+                    try:
+                        os.remove(temp_out)
+                    except Exception:
+                        pass
+
+        file_size = os.path.getsize(temp_out)
         return StreamingResponse(
-            proc.stdout,
+            iterfile(),
             media_type="video/mp4",
-            headers={"Content-Disposition": f'attachment; filename="{clean_filename}"'}
+            headers={
+                "Content-Disposition": f'attachment; filename="{clean_filename}"',
+                "Content-Length": str(file_size)
+            }
         )
     except Exception as e:
+        if os.path.exists(temp_out):
+            try:
+                os.remove(temp_out)
+            except Exception:
+                pass
         raise HTTPException(status_code=500, detail=f"FFmpeg muxing failed: {str(e)}")
 
 @app.api_route("/extract", methods=["GET", "POST"])
@@ -281,12 +308,14 @@ async def extract_media(request: Request, url: str = Query(None)):
             # Sort and classify formats: Combined (Audio+Video) vs DASH Video-Only vs Audio-Only
             formats = info.get('formats') or []
             
-            # Keep all formats that have direct HTTP/HTTPS URLs, excluding image storyboards
+            # Keep all formats that have direct HTTP/HTTPS URLs, excluding image storyboards and HLS manifests
             valid_formats = [
                 f for f in formats 
                 if f.get('url') 
                 and str(f.get('url', '')).startswith(('http://', 'https://'))
                 and f.get('ext') not in ['mhtml']
+                and 'manifest.googlevideo.com' not in str(f.get('url', ''))
+                and str(f.get('protocol', '')).lower() not in ['m3u8_native', 'm3u8', 'm3u8_native+http']
                 and not (f.get('vcodec') == 'none' and f.get('acodec') == 'none')
             ]
 
