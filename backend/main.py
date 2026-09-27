@@ -156,50 +156,8 @@ def health_check():
         "has_ffmpeg": bool(shutil.which(ffmpeg_bin) or os.path.exists(ffmpeg_bin) or ffmpeg_bin == "ffmpeg")
     }
 
-@app.get("/debug")
-def debug_formats(url: str):
-    """Debug route to inspect all raw formats from yt-dlp"""
-    cookie_path = ensure_cookie_file()
-    ydl_opts = {
-        'quiet': True,
-        'skip_download': True,
-        'extractor_args': {
-            'youtube': {
-                'player_client': ['android', 'ios', 'tv']
-            }
-        }
-    }
-    if cookie_path:
-        ydl_opts['cookiefile'] = cookie_path
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(url, download=False)
-        fmts = info.get('formats', [])
-        return {
-            "title": info.get("title"),
-            "url": info.get("url"),
-            "formats_count": len(fmts),
-            "formats": [
-                {
-                    "format_id": f.get("format_id"),
-                    "ext": f.get("ext"),
-                    "vcodec": f.get("vcodec"),
-                    "acodec": f.get("acodec"),
-                    "height": f.get("height"),
-                    "width": f.get("width"),
-                    "tbr": f.get("tbr"),
-                    "abr": f.get("abr"),
-                    "protocol": f.get("protocol"),
-                    "format_note": f.get("format_note"),
-                    "has_url": bool(f.get("url")),
-                    "url": f.get("url")
-                }
-                for f in fmts
-            ]
-        }
-
-
-
 @app.get("/mux")
+
 async def mux_streams(
     video_url: str = Query(..., description="Direct video stream URL"),
     audio_url: str = Query(..., description="Direct audio stream URL"),
