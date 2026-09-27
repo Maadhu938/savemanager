@@ -1,7 +1,13 @@
 {
-  "cleanUrls": true,
+  "cleanUrls": false,
   "rewrites": [
-    { "source": "/google40ea7b305669ded0.html", "destination": "/api/google-verify" },
+    { "source": "/about", "destination": "/about.html" },
+    { "source": "/blog", "destination": "/blog.html" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/dmca", "destination": "/dmca.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/blog/(.*)", "destination": "/blog/$1.html" },
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ],
   "headers": [
