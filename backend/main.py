@@ -49,6 +49,8 @@ def detect_platform(url: str) -> str:
         return 'youtube'
     if 'tiktok.com' in clean:
         return 'tiktok'
+    if 'twitter.com' in clean or 'x.com' in clean:
+        return 'twitter'
     return 'video'
 
 def get_ffmpeg_binary() -> str:
@@ -181,6 +183,10 @@ async def mux_streams(
         referer = "https://www.facebook.com/"
     elif "pinimg.com" in video_url or "pinterest.com" in video_url:
         referer = "https://www.pinterest.com/"
+    elif "tiktok.com" in video_url or "byteoversea.com" in video_url:
+        referer = "https://www.tiktok.com/"
+    elif "twimg.com" in video_url or "twitter.com" in video_url or "x.com" in video_url:
+        referer = "https://twitter.com/"
 
     headers_opt = f"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\r\nReferer: {referer}\r\n"
     ffmpeg_bin = get_ffmpeg_binary()
@@ -262,6 +268,10 @@ async def extract_media(request: Request, url: str = Query(None)):
         referer = "https://www.facebook.com/"
     elif platform == 'pinterest':
         referer = "https://www.pinterest.com/"
+    elif platform == 'tiktok':
+        referer = "https://www.tiktok.com/"
+    elif platform == 'twitter':
+        referer = "https://twitter.com/"
 
     ydl_opts = {
         'quiet': True,

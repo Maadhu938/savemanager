@@ -431,6 +431,18 @@ body {
   color: #f43f5e;
 }
 
+.platform-indicator-tag.detected-tiktok {
+  background: rgba(0, 242, 254, 0.15);
+  border-color: rgba(0, 242, 254, 0.35);
+  color: #00f2fe;
+}
+
+.platform-indicator-tag.detected-youtube {
+  background: rgba(255, 0, 0, 0.15);
+  border-color: rgba(255, 0, 0, 0.35);
+  color: #f87171;
+}
+
 .platform-indicator-tag.detected-facebook {
   background: rgba(24, 119, 242, 0.15);
   border-color: rgba(24, 119, 242, 0.35);
@@ -443,10 +455,10 @@ body {
   color: #f87171;
 }
 
-.platform-indicator-tag.detected-youtube {
-  background: rgba(255, 0, 0, 0.15);
-  border-color: rgba(255, 0, 0, 0.35);
-  color: #f87171;
+.platform-indicator-tag.detected-twitter {
+  background: rgba(29, 155, 240, 0.15);
+  border-color: rgba(29, 155, 240, 0.35);
+  color: #38bdf8;
 }
 
 .native-url-input {
@@ -581,9 +593,11 @@ body {
 }
 
 .dot-ig { background: #e1306c; box-shadow: 0 0 6px rgba(225, 48, 108, 0.6); }
+.dot-tt { background: #00f2fe; box-shadow: 0 0 6px rgba(0, 242, 254, 0.6); }
+.dot-yt { background: #ff0000; box-shadow: 0 0 6px rgba(255, 0, 0, 0.6); }
 .dot-fb { background: #1877f2; box-shadow: 0 0 6px rgba(24, 119, 242, 0.6); }
 .dot-pin { background: #e60023; box-shadow: 0 0 6px rgba(230, 0, 35, 0.6); }
-.dot-yt { background: #ff0000; box-shadow: 0 0 6px rgba(255, 0, 0, 0.6); }
+.dot-x { background: #38bdf8; box-shadow: 0 0 6px rgba(56, 189, 248, 0.6); }
 
 /* =========================================================
    CUSTOM HAND-CRAFTED ORGANIC SVG GOOEY MORPHING LOADER
@@ -3674,6 +3688,179 @@ body {
 [data-theme="light"] .adsterra-native-banner {
   background: rgba(0, 0, 0, 0.02);
   border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* =========================================================
+   SEO Content Enrichment: How It Works & Core Architecture
+   ========================================================= */
+
+.how-it-works-wrap {
+  margin: 64px auto 48px;
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 28px 24px;
+  position: relative;
+  transition: transform 0.25s var(--ease-spring), border-color 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.step-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(99, 102, 241, 0.15);
+}
+
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: var(--accent-light);
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 0.95rem;
+  margin-bottom: 18px;
+}
+
+.step-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-pure);
+  margin-bottom: 10px;
+}
+
+.step-desc {
+  font-size: 0.92rem;
+  color: var(--text-mid);
+  line-height: 1.6;
+}
+
+/* Why Choose SaveManager Grid */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.feature-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  transition: all 0.2s var(--ease-snap);
+}
+
+.feature-box:hover {
+  border-color: var(--border-prominent);
+  background: var(--bg-card-hover);
+}
+
+.feature-icon-wrapper {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--accent-light);
+}
+
+.feature-heading {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-pure);
+  margin-bottom: 8px;
+}
+
+.feature-text {
+  font-size: 0.88rem;
+  color: var(--text-mid);
+  line-height: 1.55;
+}
+
+/* Blog In-Article High-Converting CTA Box */
+.blog-cta-box {
+  margin: 40px 0;
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(225, 48, 108, 0.08));
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.7);
+  text-align: center;
+}
+
+.blog-cta-box h3 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-pure);
+  margin-bottom: 10px;
+}
+
+.blog-cta-box p {
+  color: var(--text-mid);
+  max-width: 580px;
+  margin: 0 auto 20px;
+  font-size: 0.96rem;
+  line-height: 1.6;
+}
+
+.blog-cta-box .cta-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 32px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+  transition: all 0.2s ease;
+}
+
+.blog-cta-box .cta-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(99, 102, 241, 0.55);
+}
+
+@media (max-width: 900px) {
+  .steps-grid,
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .steps-grid,
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  .blog-cta-box {
+    padding: 24px 18px;
+  }
 }
 
 

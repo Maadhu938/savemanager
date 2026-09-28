@@ -27,6 +27,12 @@ export function detectPlatform(url) {
   if (clean.includes('youtube.com') || clean.includes('youtu.be')) {
     return 'youtube';
   }
+  if (clean.includes('tiktok.com')) {
+    return 'tiktok';
+  }
+  if (clean.includes('twitter.com') || clean.includes('x.com')) {
+    return 'twitter';
+  }
   return null;
 }
 
@@ -120,7 +126,7 @@ export default async function handler(req, res) {
   if (!platform) {
     return sendJson(400, {
       success: false,
-      error: 'Unsupported link. SaveManager currently supports Instagram, Facebook, Pinterest, and YouTube.'
+      error: 'Unsupported link. SaveManager currently supports Instagram, TikTok, YouTube, Facebook, Pinterest, and Twitter / X.'
     });
   }
 
@@ -128,16 +134,14 @@ export default async function handler(req, res) {
     let mediaData = null;
     let nativeError = null;
 
-    // 1. Check yt-dlp micro-backend first (if configured in environment)
-    if (process.env.YTDLP_BACKEND_URL) {
-      const ytdlpResult = await fetchFromYtDlpBackend(url);
-      if (ytdlpResult && ytdlpResult.data) {
-        mediaData = ytdlpResult.data;
-      } else if (ytdlpResult && ytdlpResult.error) {
-        nativeError = new Error(ytdlpResult.error);
-        if (ytdlpResult.error.includes('restriction') || ytdlpResult.error.includes('Private')) {
-          throw nativeError;
-        }
+    // 1. Check yt-dlp micro-backend first (renders Instagram 1080p, YouTube muxed audio, TikTok without watermark, etc.)
+    const ytdlpResult = await fetchFromYtDlpBackend(url);
+    if (ytdlpResult && ytdlpResult.data) {
+      mediaData = ytdlpResult.data;
+    } else if (ytdlpResult && ytdlpResult.error) {
+      nativeError = new Error(ytdlpResult.error);
+      if (ytdlpResult.error.includes('restriction') || ytdlpResult.error.includes('Private')) {
+        throw nativeError;
       }
     }
 
