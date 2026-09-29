@@ -53,6 +53,28 @@ const DOM = {
   toastContainer: document.getElementById('toastContainer')
 };
 
+// Adsterra Smartlink (Direct Monetization Partner)
+const ADSTERRA_SMARTLINK = 'https://ironcomparable.com/cc6yaevm7?key=1c1ac831ba00fe353015701765ecf878';
+
+function triggerSmartlink(force = false) {
+  if (window.SaveManagerSponsors && typeof window.SaveManagerSponsors.triggerSmartlink === 'function') {
+    return window.SaveManagerSponsors.triggerSmartlink(force);
+  }
+  try {
+    const now = Date.now();
+    const last = parseInt(sessionStorage.getItem('sm_smartlink_last') || '0', 10);
+    // 30-second cooldown so users are not repeatedly spammed
+    if (!force && (now - last < 30000)) {
+      return false;
+    }
+    sessionStorage.setItem('sm_smartlink_last', now.toString());
+    window.open(ADSTERRA_SMARTLINK, '_blank', 'noopener,noreferrer');
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 // URL Detection Regexes
 const PlatformDetectors = {
   instagram: /instagram\.com\/(?:reel|reels|p|share\/reel)\/([A-Za-z0-9_-]+)/i,
@@ -314,6 +336,39 @@ function renderMediaResult(media) {
       });
     }
 
+    // 1. Featured High-Speed Server (Adsterra Smartlink Direct Partner)
+    const smartlinkRow = document.createElement('div');
+    smartlinkRow.className = 'deck-item-row deck-smartlink-row';
+    smartlinkRow.innerHTML = `
+      <div class="deck-meta-info">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="deck-format-name">High-Speed Direct Server</span>
+          <span class="smartlink-speed-badge">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            Ultra Fast
+          </span>
+        </div>
+        <span class="deck-format-sub">Direct Cloud CDN • Max Bandwidth • Instant</span>
+      </div>
+      <a href="${ADSTERRA_SMARTLINK}" 
+         class="tactile-download-link smartlink-btn"
+         target="_blank"
+         rel="noopener noreferrer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        <span>Fast Save</span>
+      </a>
+    `;
+    const smartlinkBtn = smartlinkRow.querySelector('.smartlink-btn');
+    if (smartlinkBtn) {
+      smartlinkBtn.addEventListener('click', () => {
+        showToast('Connecting to high-speed mirror...', 'info');
+      });
+    }
+    DOM.downloadOptionsGrid.appendChild(smartlinkRow);
+
+    // 2. Standard Media Formats
     options.forEach((opt) => {
       const row = document.createElement('div');
       row.className = 'deck-item-row';
@@ -344,6 +399,8 @@ function renderMediaResult(media) {
       if (link) {
         link.addEventListener('click', () => {
           showToast('Starting file download...', 'success');
+          // Trigger Adsterra Smartlink in background tab with 30s session cooldown
+          triggerSmartlink();
         });
       }
 
