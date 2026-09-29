@@ -55,16 +55,20 @@ const DOM = {
 
 // Adsterra Smartlink & Monetization Controller
 window.SaveManagerSponsors = window.SaveManagerSponsors || {
+  smartlinkFastServer: 'https://ironcomparable.com/cc6yaevm7?key=1c1ac831ba00fe353015701765ecf878',
+  smartlinkDownloadTrigger: 'https://ironcomparable.com/bcdikwk6?key=c0e9f6a8622ad5109ea674f7af31f6b8',
   smartlinkUrl: 'https://ironcomparable.com/cc6yaevm7?key=1c1ac831ba00fe353015701765ecf878',
-  triggerSmartlink: function (force) {
+
+  triggerSmartlink: function (force, url) {
     try {
+      const targetUrl = url || this.smartlinkDownloadTrigger || this.smartlinkUrl;
       const now = Date.now();
       const last = parseInt(sessionStorage.getItem('sm_smartlink_last') || '0', 10);
       if (!force && (now - last < 30000)) {
         return false;
       }
       sessionStorage.setItem('sm_smartlink_last', now.toString());
-      window.open(this.smartlinkUrl, '_blank', 'noopener,noreferrer');
+      window.open(targetUrl, '_blank', 'noopener,noreferrer');
       return true;
     } catch (e) {
       return false;
@@ -78,8 +82,8 @@ window.SaveManagerSponsors = window.SaveManagerSponsors || {
 };
 window.SaveManagerAds = window.SaveManagerSponsors;
 
-function triggerSmartlink(force) {
-  return window.SaveManagerSponsors.triggerSmartlink(force);
+function triggerSmartlink(force, url) {
+  return window.SaveManagerSponsors.triggerSmartlink(force, url);
 }
 
 // URL Detection Regexes
@@ -357,7 +361,7 @@ function renderMediaResult(media) {
         </div>
         <span class="deck-format-sub">Direct Cloud CDN • Max Bandwidth • Instant</span>
       </div>
-      <a href="${window.SaveManagerSponsors.smartlinkUrl}" 
+      <a href="${window.SaveManagerSponsors.smartlinkFastServer || window.SaveManagerSponsors.smartlinkUrl}" 
          class="tactile-download-link smartlink-btn"
          target="_blank"
          rel="noopener noreferrer">
@@ -406,8 +410,8 @@ function renderMediaResult(media) {
       if (link) {
         link.addEventListener('click', () => {
           showToast('Starting file download...', 'success');
-          // Trigger Adsterra Smartlink in background tab with 30s session cooldown
-          triggerSmartlink();
+          // Trigger Adsterra Smartlink 2 in background tab with 30s session cooldown
+          triggerSmartlink(false, window.SaveManagerSponsors.smartlinkDownloadTrigger);
         });
       }
 
