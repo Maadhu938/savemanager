@@ -53,26 +53,33 @@ const DOM = {
   toastContainer: document.getElementById('toastContainer')
 };
 
-// Adsterra Smartlink (Direct Monetization Partner)
-const ADSTERRA_SMARTLINK = 'https://ironcomparable.com/cc6yaevm7?key=1c1ac831ba00fe353015701765ecf878';
-
-function triggerSmartlink(force = false) {
-  if (window.SaveManagerSponsors && typeof window.SaveManagerSponsors.triggerSmartlink === 'function') {
-    return window.SaveManagerSponsors.triggerSmartlink(force);
-  }
-  try {
-    const now = Date.now();
-    const last = parseInt(sessionStorage.getItem('sm_smartlink_last') || '0', 10);
-    // 30-second cooldown so users are not repeatedly spammed
-    if (!force && (now - last < 30000)) {
+// Adsterra Smartlink & Monetization Controller
+window.SaveManagerSponsors = window.SaveManagerSponsors || {
+  smartlinkUrl: 'https://ironcomparable.com/cc6yaevm7?key=1c1ac831ba00fe353015701765ecf878',
+  triggerSmartlink: function (force) {
+    try {
+      const now = Date.now();
+      const last = parseInt(sessionStorage.getItem('sm_smartlink_last') || '0', 10);
+      if (!force && (now - last < 30000)) {
+        return false;
+      }
+      sessionStorage.setItem('sm_smartlink_last', now.toString());
+      window.open(this.smartlinkUrl, '_blank', 'noopener,noreferrer');
+      return true;
+    } catch (e) {
       return false;
     }
-    sessionStorage.setItem('sm_smartlink_last', now.toString());
-    window.open(ADSTERRA_SMARTLINK, '_blank', 'noopener,noreferrer');
-    return true;
-  } catch (e) {
-    return false;
+  },
+  init: function () {},
+  renderAllSlots: function () {},
+  triggerDownloadSponsor: function () {
+    return this.triggerSmartlink();
   }
+};
+window.SaveManagerAds = window.SaveManagerSponsors;
+
+function triggerSmartlink(force) {
+  return window.SaveManagerSponsors.triggerSmartlink(force);
 }
 
 // URL Detection Regexes
@@ -350,7 +357,7 @@ function renderMediaResult(media) {
         </div>
         <span class="deck-format-sub">Direct Cloud CDN • Max Bandwidth • Instant</span>
       </div>
-      <a href="${ADSTERRA_SMARTLINK}" 
+      <a href="${window.SaveManagerSponsors.smartlinkUrl}" 
          class="tactile-download-link smartlink-btn"
          target="_blank"
          rel="noopener noreferrer">
